@@ -1,0 +1,35 @@
+{
+    "name": "hacker-portfolio",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite dev",
+        "build": "vite build",
+        "preview": "vite preview",
+        "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+        "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+    },
+    "dependencies": {
+        "@popmotion/popcorn": "^0.4.4",
+        "@sveltejs/kit": "^2.0.0",
+        "@types/node": "^20.0.0",
+        "@types/styled-components": "^5.1.34",
+        "autoprefixer": "^10.4.16",
+        "framesync": "^6.1.2",
+        "popmotion": "^11.0.5",
+        "postcss": "^8.4.32",
+        "react-router-dom": "^7.1.3",
+        "styled-components": "^6.1.14",
+        "svelte": "^4.0.0",
+        "tailwindcss": "^3.4.1"
+    },
+    "devDependencies": {
+        "@sveltejs/adapter-auto": "^3.0.0",
+        "@sveltejs/vite-plugin-svelte": "^3.0.0",
+        "@tailwindcss/typography": "^0.5.16",
+        "svelte-check": "^3.6.0",
+        "typescript": "^5.0.0",
+        "vite": "^5.0.3"
+    }
+}
