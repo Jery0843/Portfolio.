@@ -34,7 +34,7 @@
                 "name": "VIT University"
             }
         ],
-        "email": "mailto:contact@yourportfolio.com"
+        "email": "mailto:jeromeandrewk@proton.me"
     };
     
     const websiteData = {
