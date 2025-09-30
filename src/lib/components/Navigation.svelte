@@ -242,11 +242,11 @@ onMount(() => {
             aria-expanded={isMenuOpen}
             type="button"
         >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 {#if !isMenuOpen}
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                 {:else}
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                 {/if}
             </svg>
         </button>
@@ -418,12 +418,19 @@ onMount(() => {
     border: none;
     padding: 0.5rem;
     cursor: pointer;
-    transition: color 150ms ease;
+    transition: all 150ms ease;
     z-index: 10001;
     position: relative;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     pointer-events: auto;
+}
+
+.mobile-menu-btn .menu-icon {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    display: block;
 }
 
 .mobile-menu-btn:hover {
