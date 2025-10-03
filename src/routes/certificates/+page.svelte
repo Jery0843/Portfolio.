@@ -177,7 +177,21 @@ const certificates = [
   "link": "https://learn.eccouncil.org/certificate/b2e51562-ecab-4bcc-b9c3-6ff5a308cf3e",
   "skills": ["OSINT", "Information Gathering", "Cybersecurity Research"],
   "description": "Successfully completed the Open Source Intelligence course by EC-Council Continuing Education. Course duration: 4 hours. Certificate Number: 438262."
+},
+{
+  "id": 23,
+  "title": "Introduction to Applied Cryptography",
+  "organization": "University of London (Coursera)",
+  "date": "Sep 2025",
+  "category": "Cryptography",
+  "level": "Intermediate",
+  "color": "#0066cc",
+  "icon": "🔐",
+  "link": "https://www.coursera.org/verify/D9TS2RJPLBKB",
+  "skills": ["Applied Cryptography", "Public Key Infrastructure", "Encryption", "Key Management", "Data Integrity"],
+  "description": "Successfully completed the 'Introduction to Applied Cryptography' course, authorized by the University of London and offered via Coursera. Course duration: 19 hours."
 }
+
 
 ];
 
