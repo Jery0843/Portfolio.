@@ -183,7 +183,7 @@ const certificates = [
   "title": "Introduction to Applied Cryptography",
   "organization": "University of London (Coursera)",
   "date": "Sep 2025",
-  "category": "Cryptography",
+  "category": "Web Security",
   "level": "Intermediate",
   "color": "#0066cc",
   "icon": "🔐",
