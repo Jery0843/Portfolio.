@@ -3,7 +3,7 @@
     export let description: string = 'Jerome Andrew K - Cybersecurity Expert & Ethical Hacker. Specializing in encryption, AI security, penetration testing, and malware analysis. Explore projects, research, and experience.';
     export let keywords: string = 'cybersecurity, ethical hacking, penetration testing, security researcher, full-stack developer, Jerome Andrew K, infosec, vulnerability assessment, network security, malware analysis';
     export let canonical: string = '';
-    export let ogImage: string = 'https://securehive.securenotepad.tech/2.jpeg';
+    export let ogImage: string = 'https://jerome.is-a.dev/logo.jpeg';
     export let ogType: string = 'website';
     export let twitterCard: string = 'summary_large_image';
     export let twitterCreator: string = '@0xJerry__';

@@ -8,7 +8,7 @@
         "@type": "Person",
         "name": "Jerome Andrew K",
         "url": baseUrl,
-        "image": "https://securehive.securenotepad.tech/2.jpeg",
+        "image": "https://jerome.is-a.dev/logo.jpeg",
         "jobTitle": "Cybersecurity Expert & Ethical Hacker",
         "description": "Cybersecurity Expert & Ethical Hacker specializing in encryption, AI security, penetration testing, and malware analysis.",
         "knowsAbout": [
@@ -63,7 +63,7 @@
         "@type": "Organization",
         "name": "Jerome Andrew K",
         "url": baseUrl,
-        "logo": "https://securehive.securenotepad.tech/2.jpeg",
+        "logo": "https://jerome.is-a.dev/logo.jpeg",
         "description": "Cybersecurity consulting and penetration testing services",
         "founder": {
             "@type": "Person",
