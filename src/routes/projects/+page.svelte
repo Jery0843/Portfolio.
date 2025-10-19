@@ -18,6 +18,46 @@ let primaryView = 'projects';
 
 const projects = [
      {
+  "id": 8,
+  "title": "QnQSec CTF 2025",
+  "category": "Capture The Flag",
+  "url": "#",
+  "duration": "Oct 2025",
+  "affiliation": "QnQSec CTF (Individual Participant – Team Secure-Hive)",
+  "color": "#8a2be2",
+  "icon": "🏴‍☠️",
+  "difficulty": "Advanced",
+  "status": "Completed",
+  "overview": "Participated individually in the 48-hour QnQSec CTF 2025 (17–19 Oct 2025) under the team name 'Secure-Hive'. Solved a variety of challenges across OSINT, Warmup, Misc, Hardware, and Pwn categories — emphasizing analytical thinking, reverse engineering, and system exploitation. Focused on end-to-end challenge solving, from reconnaissance to payload crafting, while maintaining detailed documentation for post-event learning.",
+  "technologies": [
+    "Kali Linux",
+    "Ghidra",
+    "pwntools",
+    "Nmap",
+    "Burp Suite",
+    "Wireshark",
+    "Python",
+    "Bash",
+    "Docker",
+    "Radare2"
+  ],
+  "achievements": [
+    "Ranked 247th out of global participants with a total score of 550 points",
+    "Solved 10+ challenges spanning OSINT, Pwn, Warmup, Misc, and Hardware categories",
+    "Maintained consistent progress across the 48-hour event while documenting challenge solutions",
+    "Individually represented team 'Secure-Hive' with handle '0xJerry'"
+  ],
+  "skills": [
+    "Reverse engineering and exploit development",
+    "OSINT and information correlation",
+    "Binary and firmware analysis",
+    "Hardware interfacing and debugging basics",
+    "CTF strategy and time-constrained problem solving",
+    "Clear documentation and write-up creation"
+  ],
+  "impact": "Significantly improved proficiency in practical cybersecurity problem solving through hands-on challenges across diverse domains. Strengthened capabilities in exploit prototyping, binary analysis, and OSINT workflows. This competition experience expanded technical breadth and contributed refined notes and reusable tooling for future CTF participation."
+},
+     {
   "id": 1,
   "title": "Holmes CTF 2025",
   "category": "Capture The Flag",
@@ -68,7 +108,7 @@ const projects = [
   "color":  "#ff4500",
   "icon": "🏆",
   "difficulty": "Advanced",
-  "status": "Active",
+  "status": "Completed",
   "overview": "Active competitor in Hack The Box Play CTF events and continuous challenge practice. Work spans web exploitation, binary pwn, reverse engineering, crypto, forensics, OSINT and infrastructure/hardening tasks. Focus on rapid triage, exploit development, tool automation, and producing clear write-ups for learning and portfolio.",
   "technologies": [
     "Kali Linux",
@@ -210,48 +250,7 @@ const projects = [
         ],
         skills: ["Application Security", "Encryption", "Data Integrity", "Authentication", "Privacy Engineering"],
         impact: "Delivered secure note-taking solution balancing high-level data privacy with intuitive user experience and advanced cybersecurity techniques."
-    },
-    {
-  "id": 8,
-  "title": "QnQSec CTF 2025",
-  "category": "Capture The Flag",
-  "url": "#",
-  "duration": "Oct 2025",
-  "affiliation": "QnQSec CTF (Individual Participant – Team Secure-Hive)",
-  "color": "#8a2be2",
-  "icon": "🏴‍☠️",
-  "difficulty": "Advanced",
-  "status": "Completed",
-  "overview": "Participated individually in the 48-hour QnQSec CTF 2025 (17–19 Oct 2025) under the team name 'Secure-Hive'. Solved a variety of challenges across OSINT, Warmup, Misc, Hardware, and Pwn categories — emphasizing analytical thinking, reverse engineering, and system exploitation. Focused on end-to-end challenge solving, from reconnaissance to payload crafting, while maintaining detailed documentation for post-event learning.",
-  "technologies": [
-    "Kali Linux",
-    "Ghidra",
-    "pwntools",
-    "Nmap",
-    "Burp Suite",
-    "Wireshark",
-    "Python",
-    "Bash",
-    "Docker",
-    "Radare2"
-  ],
-  "achievements": [
-    "Ranked 247th out of global participants with a total score of 550 points",
-    "Solved 10+ challenges spanning OSINT, Pwn, Warmup, Misc, and Hardware categories",
-    "Maintained consistent progress across the 48-hour event while documenting challenge solutions",
-    "Individually represented team 'Secure-Hive' with handle '0xJerry'"
-  ],
-  "skills": [
-    "Reverse engineering and exploit development",
-    "OSINT and information correlation",
-    "Binary and firmware analysis",
-    "Hardware interfacing and debugging basics",
-    "CTF strategy and time-constrained problem solving",
-    "Clear documentation and write-up creation"
-  ],
-  "impact": "Significantly improved proficiency in practical cybersecurity problem solving through hands-on challenges across diverse domains. Strengthened capabilities in exploit prototyping, binary analysis, and OSINT workflows. This competition experience expanded technical breadth and contributed refined notes and reusable tooling for future CTF participation."
-}
-
+    }
 ];
 
 const categories = ['all', 'Penetration Testing', 'Capture The Flag', 'Cybersecurity Tool', 'Machine Learning', 'Security Application'];
