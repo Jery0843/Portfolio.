@@ -17,6 +17,47 @@ let filterType = 'all';
 let primaryView = 'projects';
 
 const projects = [
+      {
+  "id": 9,
+  "title": "Hack The Boo CTF 2025",
+  "category": "Capture The Flag",
+  "url": "https://pub-113bc69380eb4f6a984dc329fbd14c58.r2.dev/HackTheBoo.pdf",
+  "duration": "Oct 24–27, 2025",
+  "affiliation": "HackTheBox (Secure-Hive)",
+  "color": "#ff7a18",
+  "icon": "🏅",
+  "difficulty": "Advanced",
+  "status": "Completed",
+  "overview": "Participated with team Secure-Hive in HackTheBox's Hack The Boo CTF (24–27 Oct 2025). Solved 15 out of 23 challenges across multiple categories (Web, Crypto, Reversing, Forensics, and Pwn). Focused on rapid triage, exploit prototyping, automation of tooling, and producing clear write-ups for learning and portfolio.",
+  "technologies": [
+    "Kali Linux",
+    "Burp Suite",
+    "Nmap",
+    "Wireshark",
+    "Ghidra",
+    "Radare2",
+    "pwntools",
+    "John / Hashcat",
+    "Python",
+    "Bash",
+    "Docker"
+  ],
+  "achievements": [
+    "Solved 15 out of 23 challenges across multiple categories",
+    "Ranked 265th out of 2,893 teams with a total of 7,075 points",
+    "Represented team 'Secure-Hive' and contributed consistently to team progress",
+    "Attached certificate of participation for verification"
+  ],
+  "skills": [
+    "Exploit development and tooling automation",
+    "Reverse engineering & binary analysis",
+    "Applied cryptography and forensic investigation",
+    "Web exploitation and network analysis",
+    "Rapid triage under time-constrained competition",
+    "Team coordination and documentation of findings"
+  ],
+  "impact": "Enhanced hands-on offensive security capabilities by solving realistic CTF challenges. Strengthened teamwork, rapid exploit prototyping, forensic analysis, and produced reusable notes and write-ups to improve efficiency in future competitions."
+},
      {
   "id": 8,
   "title": "QnQSec CTF 2025",
