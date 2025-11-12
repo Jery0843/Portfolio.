@@ -22,7 +22,7 @@ const projects = [
   "title": "Iran Tech Olympics CTF 2025",
   "category": "Capture The Flag",
   "url": "https://ctftime.org/event/2775",
-  "duration": "Sep 26–27, 2025",
+  "duration": "Sep 2025",
   "affiliation": "Iran Tech Olympics (Individual Participant – Team Secure-Hive)",
   "color": "#ff1493",
   "icon": "🥇",
