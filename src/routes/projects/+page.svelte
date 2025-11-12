@@ -63,7 +63,7 @@ const projects = [
   "title": "BuckeyeCTF 2025",
   "category": "Capture The Flag",
   "url": "https://ctftime.org/event/2883",
-  "duration": "Sep 2025",
+  "duration": "Nov 2025",
   "affiliation": "BuckeyeCTF (Individual Participant – Team Secure-Hive)",
   "color": "#dc143c",
   "icon": "🎯",
