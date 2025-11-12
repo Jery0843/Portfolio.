@@ -136,7 +136,7 @@ const projects = [
     "Advanced CTF competition strategies"
   ],
   "impact": "Enhanced expertise in expert-level CTF problem-solving by tackling preview challenges for prestigious m0leCon competition. Developed resilience and adaptability when facing novel, high-difficulty challenges while building experience for future participation in top-tier security competitions."
-}
+},
       {
   "id": 9,
   "title": "Hack The Boo CTF 2025",
