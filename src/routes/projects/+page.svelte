@@ -18,6 +18,47 @@ let primaryView = 'projects';
 
 const projects = [
        {
+  "id": 13,
+  "title": "Iran Tech Olympics CTF 2025",
+  "category": "Capture The Flag",
+  "url": "https://ctftime.org/event/2775",
+  "duration": "Sep 26–27, 2025",
+  "affiliation": "Iran Tech Olympics (Individual Participant – Team Secure-Hive)",
+  "color": "#ff1493",
+  "icon": "🥇",
+  "difficulty": "Advanced",
+  "status": "Completed",
+  "overview": "Competed in the International Iran Tech Olympics CTF 2025 preliminary qualifying round, ranking 129th globally out of 669 teams with 241 points and a CTFtime rating of 1.202. This 24-hour Jeopardy-style competition served as the gateway to on-site finals in Iran, featuring challenges across multiple security domains with a total prize pool of $13,337 and fully-funded travel for international finalists.",
+  "technologies": [
+    "Kali Linux",
+    "Burp Suite",
+    "Ghidra",
+    "Nmap",
+    "Wireshark",
+    "pwntools",
+    "Python",
+    "Bash",
+    "Radare2",
+    "Metasploit",
+    "Hashcat"
+  ],
+  "achievements": [
+    "Ranked 129th out of 669 teams globally with 241 total points",
+    "Achieved CTFtime weight rating of 1.202 in competitive international field",
+    "Competed in high-stakes qualifying round for on-site finals in Iran",
+    "Represented team 'Secure-Hive' with handle '0xJerry' throughout 24-hour competition"
+  ],
+  "skills": [
+    "Multi-domain security problem solving",
+    "Web exploitation and network penetration",
+    "Binary analysis and reverse engineering",
+    "Cryptographic challenge solving",
+    "Rapid triage in competitive environment",
+    "International CTF competition experience"
+  ],
+  "impact": "Gained valuable experience competing in prestigious international CTF with significant prizes and on-site finals opportunity. Strengthened ability to perform under pressure in 24-hour continuous competition format while competing against 669 global teams. Enhanced tactical problem-solving and expanded international CTF portfolio."
+},
+       {
   "id": 12,
   "title": "BuckeyeCTF 2025",
   "category": "Capture The Flag",
