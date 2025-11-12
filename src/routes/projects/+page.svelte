@@ -19,6 +19,46 @@ let primaryView = 'projects';
 const projects = [
        {
   "id": 13,
+  "title": "BuckeyeCTF 2025",
+  "category": "Capture The Flag",
+  "url": "https://ctftime.org/event/2883",
+  "duration": "Nov 2025",
+  "affiliation": "BuckeyeCTF (Individual Participant – Team Secure-Hive)",
+  "color": "#dc143c",
+  "icon": "🎯",
+  "difficulty": "Advanced",
+  "status": "Completed",
+  "overview": "Competed in BuckeyeCTF 2025 under team 'Secure-Hive', achieving 279th place globally with 460 points and a CTFtime rating of 2.449. Tackled diverse challenges across multiple security domains, emphasizing rapid exploit development, cryptographic problem-solving, and forensic analysis under competitive time constraints.",
+  "technologies": [
+    "Kali Linux",
+    "Burp Suite",
+    "Ghidra",
+    "pwntools",
+    "Wireshark",
+    "Python",
+    "Bash",
+    "Radare2",
+    "John the Ripper",
+    "Docker"
+  ],
+  "achievements": [
+    "Ranked 279th out of thousands of global participants with 460 total points",
+    "Achieved CTFtime weight rating of 2.449, reflecting strong performance in high-quality competition",
+    "Solved challenges spanning Web, Pwn, Crypto, Reversing, and Forensics categories",
+    "Maintained consistent progress throughout the competition duration"
+  ],
+  "skills": [
+    "Binary exploitation and reverse engineering",
+    "Web application security testing",
+    "Cryptanalysis and cipher breaking",
+    "Memory forensics and artifact analysis",
+    "Time-constrained problem solving",
+    "CTF strategy and task prioritization"
+  ],
+  "impact": "Strengthened offensive security capabilities through high-stakes competition against global talent. Enhanced rapid triage skills, exploit automation, and technical documentation while contributing to overall CTF portfolio and competitive ranking improvement."
+},
+       {
+  "id": 12,
   "title": "Iran Tech Olympics CTF 2025",
   "category": "Capture The Flag",
   "url": "https://ctftime.org/event/2775",
@@ -57,46 +97,6 @@ const projects = [
     "International CTF competition experience"
   ],
   "impact": "Gained valuable experience competing in prestigious international CTF with significant prizes and on-site finals opportunity. Strengthened ability to perform under pressure in 24-hour continuous competition format while competing against 669 global teams. Enhanced tactical problem-solving and expanded international CTF portfolio."
-},
-       {
-  "id": 12,
-  "title": "BuckeyeCTF 2025",
-  "category": "Capture The Flag",
-  "url": "https://ctftime.org/event/2883",
-  "duration": "Nov 2025",
-  "affiliation": "BuckeyeCTF (Individual Participant – Team Secure-Hive)",
-  "color": "#dc143c",
-  "icon": "🎯",
-  "difficulty": "Advanced",
-  "status": "Completed",
-  "overview": "Competed in BuckeyeCTF 2025 under team 'Secure-Hive', achieving 279th place globally with 460 points and a CTFtime rating of 2.449. Tackled diverse challenges across multiple security domains, emphasizing rapid exploit development, cryptographic problem-solving, and forensic analysis under competitive time constraints.",
-  "technologies": [
-    "Kali Linux",
-    "Burp Suite",
-    "Ghidra",
-    "pwntools",
-    "Wireshark",
-    "Python",
-    "Bash",
-    "Radare2",
-    "John the Ripper",
-    "Docker"
-  ],
-  "achievements": [
-    "Ranked 279th out of thousands of global participants with 460 total points",
-    "Achieved CTFtime weight rating of 2.449, reflecting strong performance in high-quality competition",
-    "Solved challenges spanning Web, Pwn, Crypto, Reversing, and Forensics categories",
-    "Maintained consistent progress throughout the competition duration"
-  ],
-  "skills": [
-    "Binary exploitation and reverse engineering",
-    "Web application security testing",
-    "Cryptanalysis and cipher breaking",
-    "Memory forensics and artifact analysis",
-    "Time-constrained problem solving",
-    "CTF strategy and task prioritization"
-  ],
-  "impact": "Strengthened offensive security capabilities through high-stakes competition against global talent. Enhanced rapid triage skills, exploit automation, and technical documentation while contributing to overall CTF portfolio and competitive ranking improvement."
 },
 {
   "id": 11,
