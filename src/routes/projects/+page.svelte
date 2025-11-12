@@ -17,6 +17,126 @@ let filterType = 'all';
 let primaryView = 'projects';
 
 const projects = [
+       {
+  "id": 12,
+  "title": "BuckeyeCTF 2025",
+  "category": "Capture The Flag",
+  "url": "https://ctftime.org/event/2883",
+  "duration": "Sep 2025",
+  "affiliation": "BuckeyeCTF (Individual Participant – Team Secure-Hive)",
+  "color": "#dc143c",
+  "icon": "🎯",
+  "difficulty": "Advanced",
+  "status": "Completed",
+  "overview": "Competed in BuckeyeCTF 2025 under team 'Secure-Hive', achieving 279th place globally with 460 points and a CTFtime rating of 2.449. Tackled diverse challenges across multiple security domains, emphasizing rapid exploit development, cryptographic problem-solving, and forensic analysis under competitive time constraints.",
+  "technologies": [
+    "Kali Linux",
+    "Burp Suite",
+    "Ghidra",
+    "pwntools",
+    "Wireshark",
+    "Python",
+    "Bash",
+    "Radare2",
+    "John the Ripper",
+    "Docker"
+  ],
+  "achievements": [
+    "Ranked 279th out of thousands of global participants with 460 total points",
+    "Achieved CTFtime weight rating of 2.449, reflecting strong performance in high-quality competition",
+    "Solved challenges spanning Web, Pwn, Crypto, Reversing, and Forensics categories",
+    "Maintained consistent progress throughout the competition duration"
+  ],
+  "skills": [
+    "Binary exploitation and reverse engineering",
+    "Web application security testing",
+    "Cryptanalysis and cipher breaking",
+    "Memory forensics and artifact analysis",
+    "Time-constrained problem solving",
+    "CTF strategy and task prioritization"
+  ],
+  "impact": "Strengthened offensive security capabilities through high-stakes competition against global talent. Enhanced rapid triage skills, exploit automation, and technical documentation while contributing to overall CTF portfolio and competitive ranking improvement."
+},
+{
+  "id": 11,
+  "title": "RSTCON 2025 CTF",
+  "category": "Capture The Flag",
+  "url": "https://ctftime.org/event/2865",
+  "duration": "2025",
+  "affiliation": "RSTCON CTF (Individual Participant – Team Secure-Hive)",
+  "color": "#32cd32",
+  "icon": "🔐",
+  "difficulty": "Advanced",
+  "status": "Completed",
+  "overview": "Participated in RSTCON 2025 CTF, securing 264th place with 359 points and a CTFtime rating of 1.127. Focused on systematic challenge solving across security domains, leveraging reconnaissance, exploitation, and documentation skills throughout the event.",
+  "technologies": [
+    "Kali Linux",
+    "Nmap",
+    "Burp Suite",
+    "Metasploit",
+    "Ghidra",
+    "Wireshark",
+    "Python",
+    "pwntools",
+    "Hashcat",
+    "Docker"
+  ],
+  "achievements": [
+    "Achieved 264th place globally with 359 total points",
+    "CTFtime weight rating of 1.127 demonstrating solid competitive performance",
+    "Successfully solved challenges across multiple difficulty levels and categories",
+    "Represented team 'Secure-Hive' with handle '0xJerry'"
+  ],
+  "skills": [
+    "Network penetration testing",
+    "Exploit development and scripting",
+    "Cryptographic challenge solving",
+    "Web vulnerability identification",
+    "Forensic artifact extraction",
+    "Competitive CTF methodology"
+  ],
+  "impact": "Expanded practical security expertise through diverse challenge categories. Refined exploit prototyping workflows and strengthened capability to analyze and document complex vulnerabilities under competition pressure, contributing valuable experience to ongoing security skill development."
+},
+{
+  "id": 10,
+  "title": "m0leCon CTF 2026 Teaser",
+  "category": "Capture The Flag",
+  "url": "https://ctftime.org/event/2946",
+  "duration": "2025",
+  "affiliation": "m0leCon CTF (Individual Participant – Team Secure-Hive)",
+  "color": "#ff6347",
+  "icon": "🎪",
+  "difficulty": "Expert",
+  "status": "Completed",
+  "overview": "Competed in m0leCon CTF 2026 Teaser event, placing 468th with 50 points and achieving a CTFtime rating of 1.892. This teaser competition featured challenging problems designed to preview the main m0leCon event, requiring creative problem-solving and advanced exploitation techniques.",
+  "technologies": [
+    "Kali Linux",
+    "Ghidra",
+    "Radare2",
+    "pwntools",
+    "Python",
+    "Burp Suite",
+    "Wireshark",
+    "Docker",
+    "GDB",
+    "IDA Pro"
+  ],
+  "achievements": [
+    "Secured 468th place with 50 points in highly competitive teaser event",
+    "Achieved CTFtime weight rating of 1.892, indicating strong competition quality",
+    "Tackled expert-level challenges designed as preview for main m0leCon CTF",
+    "Gained exposure to cutting-edge exploitation techniques and novel challenge formats"
+  ],
+  "skills": [
+    "Advanced binary analysis and exploitation",
+    "Complex vulnerability chaining",
+    "Novel attack vector identification",
+    "Reverse engineering sophisticated binaries",
+    "Adaptive problem-solving under uncertainty",
+    "Advanced CTF competition strategies"
+  ],
+  "impact": "Enhanced expertise in expert-level CTF problem-solving by tackling preview challenges for prestigious m0leCon competition. Developed resilience and adaptability when facing novel, high-difficulty challenges while building experience for future participation in top-tier security competitions."
+}
       {
   "id": 9,
   "title": "Hack The Boo CTF 2025",
