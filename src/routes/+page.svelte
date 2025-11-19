@@ -111,7 +111,7 @@ function initMatrix() {
             <div class="profile-card">
                 <div class="profile-image-container">
                     <img 
-                        src="https://securehive.securenotepad.tech/2.jpeg" 
+                        src="https://files.jerome.co.in/2.jpeg" 
                         alt="Jerome's Profile"
                         class="profile-image"
                     />
