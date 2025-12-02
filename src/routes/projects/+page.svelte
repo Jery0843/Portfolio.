@@ -18,6 +18,47 @@ let primaryView = 'projects';
 
 const projects = [
        {
+  "id": 14,
+  "title": "OffSec CTF – Echo Response (2025)",
+  "category": "Capture The Flag",
+  "duration": "Nov 2025",
+  "affiliation": "Offensive Security CTF (Individual Participant – Team Secure-Hive)",
+  "url": "https://0xjerry.is-a.dev/ctf",
+  "color": "#ff4500",
+  "icon": "🛡️",
+  "difficulty": "Advanced",
+  "status": "Completed",
+  "overview": "Participated in OffSec’s Echo Response CTF as part of 'Secure-Hive', securing Rank 236 out of 4267 participants with a total of 615 points. Demonstrated strong offensive security skills by solving diverse high-difficulty challenges under time pressure. Achieved the milestone of completing the first Pwn challenge in this CTF and maintained consistent performance throughout the event.",
+  "technologies": [
+    "Kali Linux",
+    "Nmap",
+    "Burp Suite",
+    "Python",
+    "pwntools",
+    "Ghidra",
+    "Wireshark",
+    "Unix utilities",
+    "CyberChef",
+    "OpenSSL"
+  ],
+  "achievements": [
+    "Ranked 236 out of 4267 global competitors with 615 total points",
+    "Completed the 'First Pwn' challenge and multiple advanced tasks across domains",
+    "Displayed strong problem-solving ability with the last submission recorded on Nov 28 at 17:34:59",
+    "Excelled in a highly competitive environment focused on real-world offensive security challenges"
+  ],
+  "skills": [
+    "Advanced penetration testing techniques",
+    "Binary exploitation fundamentals (Pwn)",
+    "Web application security analysis",
+    "Cryptography and protocol analysis",
+    "Network forensics and PCAP investigation",
+    "Rapid exploitation and debugging",
+    "CTF workflow optimization under pressure"
+  ],
+  "impact": "Improved real-world offensive security readiness through hands-on exploitation, debugging, and forensic tasks. Strengthened ability to quickly triage unfamiliar environments, automate exploitation processes, and document solutions efficiently—ultimately contributing to improved CTF ranking and overall security expertise."
+},
+       {
   "id": 13,
   "title": "BuckeyeCTF 2025",
   "category": "Capture The Flag",
