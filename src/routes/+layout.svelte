@@ -14,7 +14,7 @@ const navItems = [
     { href: '/skills', label: 'SKILLS', icon: 'code' },
     { href: '/projects', label: 'PROJECTS', icon: 'folder' },
     { href: '/certificates', label: 'CERTS', icon: 'badge-check' },
-    { href: 'https://0xjerry.is-a.dev', label: "0xJerry's Lab", icon: 'code' },
+    { href: 'https://0xjerry.jerome.co.in', label: "0xJerry's Lab", icon: 'code' },
     { href: '/contact', label: 'CONTACT', icon: 'mail' }
 ];
 
