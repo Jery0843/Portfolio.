@@ -614,9 +614,46 @@ $: visibleCategories = primaryView === 'ctfs'
     ? ['all', 'Capture The Flag']
     : categories.filter(c => c !== 'Capture The Flag');
 
-$: filteredProjects = filterType === 'all'
+// Function to parse project duration and get a sortable date
+function parseProjectDate(duration) {
+    const months = {
+        'Jan': 1, 'Feb': 2, 'Mar': 3, 'Apr': 4, 'May': 5, 'Jun': 6,
+        'Jul': 7, 'Aug': 8, 'Sep': 9, 'Oct': 10, 'Nov': 11, 'Dec': 12,
+        'January': 1, 'February': 2, 'March': 3, 'April': 4, 'June': 6,
+        'July': 7, 'August': 8, 'September': 9, 'October': 10, 'November': 11, 'December': 12
+    };
+    
+    // Handle "Ongoing" - treat as current date
+    if (duration.toLowerCase().includes('ongoing')) {
+        return new Date();
+    }
+    
+    // Try to extract the most recent date from the duration
+    // Patterns: "Nov 2025", "Oct 24–27, 2025", "May 2024 - Dec 2024", "2025", "2024 - 2025"
+    const parts = duration.split(/[-–]/);
+    const latestPart = parts[parts.length - 1].trim();
+    
+    // Try to find month and year
+    const monthMatch = latestPart.match(/([A-Za-z]+)\s*(\d{4})/);
+    if (monthMatch) {
+        const month = months[monthMatch[1]] || 1;
+        const year = parseInt(monthMatch[2]);
+        return new Date(year, month - 1, 1);
+    }
+    
+    // Try just year
+    const yearMatch = latestPart.match(/(\d{4})/);
+    if (yearMatch) {
+        return new Date(parseInt(yearMatch[1]), 11, 31); // End of year
+    }
+    
+    return new Date(0); // Fallback to epoch
+}
+
+$: filteredProjects = (filterType === 'all'
     ? baseProjects
-    : baseProjects.filter(project => project.category === filterType);
+    : baseProjects.filter(project => project.category === filterType)
+).sort((a, b) => parseProjectDate(b.duration) - parseProjectDate(a.duration));
 
 // Dynamic stats helpers and sets
 function uniqueCount(arr) {
