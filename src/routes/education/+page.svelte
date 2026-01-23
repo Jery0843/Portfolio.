@@ -217,6 +217,24 @@ onMount(() => {
         }
     };
 });
+
+// Dynamic stats calculations
+$: educationStats = {
+    qualifications: educations.length,
+    subjects: educations.reduce((total, edu) => total + edu.subjects.length, 0),
+    // Calculate approximate years of study from durations
+    years: educations.reduce((total, edu) => {
+        const parts = edu.duration.split(' - ');
+        if (parts.length === 2) {
+            const startYear = parseInt(parts[0]);
+            const endYear = parseInt(parts[1]);
+            if (!isNaN(startYear) && !isNaN(endYear)) {
+                return total + (endYear - startYear);
+            }
+        }
+        return total + 1;
+    }, 0)
+};
 </script>
 
 <!-- Particle Canvas -->
@@ -382,17 +400,17 @@ onMount(() => {
     <section class="stats-section" in:fly={{ y: 50, duration: 800, delay: 600, easing: cubicOut }}>
         <div class="stats-container">
             <div class="stat-item">
-                <div class="stat-number">4</div>
+                <div class="stat-number">{educationStats.qualifications}</div>
                 <div class="stat-label">Qualifications</div>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
-                <div class="stat-number">8+</div>
+                <div class="stat-number">{educationStats.years}+</div>
                 <div class="stat-label">Years of Study</div>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
-                <div class="stat-number">30+</div>
+                <div class="stat-number">{educationStats.subjects}+</div>
                 <div class="stat-label">Core Subjects</div>
             </div>
         </div>

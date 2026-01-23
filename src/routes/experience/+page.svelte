@@ -133,6 +133,23 @@ onMount(() => {
         }
     };
 });
+
+// Dynamic stats calculations
+$: experienceStats = {
+    companies: experiences.length,
+    technologies: [...new Set(experiences.flatMap(exp => exp.skills))].length,
+    // Calculate approximate months from experience durations
+    months: experiences.reduce((total, exp) => {
+        const parts = exp.duration.split(' – ');
+        if (parts.length === 2) {
+            const start = new Date(parts[0].replace('Dec', 'December').replace('May', 'May').replace('Jun', 'June').replace('Jan', 'January').replace('Apr', 'April'));
+            const end = new Date(parts[1].replace('Dec', 'December').replace('May', 'May').replace('Jun', 'June').replace('Jan', 'January').replace('Apr', 'April'));
+            const months = Math.round((end - start) / (1000 * 60 * 60 * 24 * 30));
+            return total + (months > 0 ? months : 1);
+        }
+        return total + 1;
+    }, 0)
+};
 </script>
 
 <!-- Particle Canvas -->
@@ -273,17 +290,17 @@ onMount(() => {
     <section class="stats-section" in:fly={{ y: 50, duration: 800, delay: 600, easing: cubicOut }}>
         <div class="stats-container">
             <div class="stat-item">
-                <div class="stat-number">2</div>
+                <div class="stat-number">{experienceStats.companies}</div>
                 <div class="stat-label">Companies</div>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
-                <div class="stat-number">6</div>
+                <div class="stat-number">{experienceStats.months}</div>
                 <div class="stat-label">Months Experience</div>
             </div>
             <div class="stat-divider"></div>
             <div class="stat-item">
-                <div class="stat-number">10+</div>
+                <div class="stat-number">{experienceStats.technologies}+</div>
                 <div class="stat-label">Technologies</div>
             </div>
         </div>

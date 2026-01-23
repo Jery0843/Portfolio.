@@ -67,8 +67,9 @@ onMount(() => {
     };
 });
 
-// Categories for filtering
-const categories = ['All', 'Ethical Hacking', 'AI & Data Science', 'Web Security', 'Programming', 'Simulation'];
+// Categories for filtering - dynamically extracted from certificates
+$: uniqueCategories = [...new Set(certificates.map(cert => cert.category))];
+$: categories = ['All', ...uniqueCategories];
 
 const certificates = [
     {
@@ -230,8 +231,8 @@ $: filteredCertificates = certificates
 
 $: certificateStats = {
     total: certificates.length,
-    categories: categories.length - 1,
-    thisYear: certificates.filter(cert => cert.date.includes('2025')).length
+    categories: uniqueCategories.length,
+    thisYear: certificates.filter(cert => cert.date.includes(new Date().getFullYear().toString())).length
 };
 </script>
 

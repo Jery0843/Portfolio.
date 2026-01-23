@@ -493,6 +493,30 @@ const projects = [
         ],
         skills: ["Application Security", "Encryption", "Data Integrity", "Authentication", "Privacy Engineering"],
         impact: "Delivered secure note-taking solution balancing high-level data privacy with intuitive user experience and advanced cybersecurity techniques."
+    },
+    {
+        id: 8,
+        title: "TorForge",
+        category: "Cybersecurity Tool",
+        url: "https://github.com/jery0843/torforge",
+        duration: "2025 - Ongoing",
+        affiliation: "Personal Project",
+        color: "#9b59b6",
+        icon: "🧅",
+        difficulty: "Expert",
+        status: "Active",
+        overview: "Experimental transparent Tor proxy that routes all system traffic through Tor at the kernel level using iptables. Features AI-powered circuit selection with a pure-Go neural network, post-quantum encryption (CRYSTALS-Kyber768), and advanced security features including steganography mode, decoy traffic, and dead man's switch.",
+        technologies: ["Go", "iptables", "CRYSTALS-Kyber768", "Neural Networks", "obfs4", "Tor", "Linux Kernel", "Cryptography"],
+        achievements: [
+            "Built pure-Go neural network for exit node quality prediction (no ML dependencies)",
+            "Implemented post-quantum encryption using CRYSTALS-Kyber768",
+            "Designed kernel-level transparent proxy with kill switch",
+            "Created AI-powered smart circuit selection with 95%+ accuracy",
+            "Developed steganography mode and decoy traffic for anti-analysis",
+            "Implemented dead man's switch for emergency shutdown with trace wiping"
+        ],
+        skills: ["Network Security", "Go Programming", "Post-Quantum Cryptography", "Machine Learning", "Linux Networking", "Privacy Engineering", "Tor Network"],
+        impact: "Created a privacy-first tool enabling complete system-wide traffic anonymization through Tor with experimental AI-powered optimizations and post-quantum security, designed for legitimate privacy protection and censorship circumvention."
     }
 ];
 
