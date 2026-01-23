@@ -1,18 +1,20 @@
 <script>
-import { onMount } from 'svelte';
-import { fade, fly, scale } from 'svelte/transition';
-import { cubicOut, elasticOut } from 'svelte/easing';
+import { onMount, onDestroy } from 'svelte';
+import { fade, fly, scale, crossfade } from 'svelte/transition';
+import { cubicOut, elasticOut, cubicInOut } from 'svelte/easing';
 
 let visible = false;
 let canvas;
-let ctx;
-let particles = [];
+let gl;
+let program;
+let animationFrame;
 let hoveredSkill = null;
 let selectedCategory = 'All';
-let animationFrame;
-let mouseX = 0;
-let mouseY = 0;
+let mouseX = 0.5;
+let mouseY = 0.5;
+let startTime;
 
+// Data
 const categories = [
     { name: 'All', color: '#00ff00', icon: '🌐' },
     { name: 'Offensive Security', color: '#ff0080', icon: '⚔️' },
@@ -55,81 +57,6 @@ const skills = [
     { name: 'TensorFlow', level: 78, category: 'AI & ML', icon: '🔷', description: 'Deep learning models, neural networks' }
 ];
 
-class Particle {
-    constructor(x, y, color) {
-        this.x = x;
-        this.y = y;
-        this.vx = (Math.random() - 0.5) * 4;
-        this.vy = (Math.random() - 0.5) * 4;
-        this.life = 1;
-        this.decay = Math.random() * 0.02 + 0.015;
-        this.size = Math.random() * 3 + 2;
-        this.color = color;
-        this.alpha = 1;
-    }
-
-    update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.life -= this.decay;
-        this.alpha = this.life;
-        this.vx *= 0.95;
-        this.vy *= 0.95;
-    }
-
-    draw(ctx) {
-        ctx.save();
-        ctx.globalAlpha = this.alpha;
-        ctx.fillStyle = this.color;
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-    }
-}
-
-function createParticles(x, y, count, color) {
-    if (!ctx) return;
-    for (let i = 0; i < count; i++) {
-        particles.push(new Particle(x, y, color));
-    }
-}
-
-function animateParticles() {
-    if (!ctx) return;
-    
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Ambient particles
-    if (Math.random() < 0.05) {
-        const colors = ['#00ff00', '#ff0080', '#00bfff', '#ff8c00', '#8a2be2'];
-        createParticles(
-            Math.random() * canvas.width,
-            Math.random() * canvas.height,
-            1,
-            colors[Math.floor(Math.random() * colors.length)]
-        );
-    }
-    
-    particles = particles.filter(particle => {
-        particle.update();
-        if (particle.life > 0) {
-            particle.draw(ctx);
-            return true;
-        }
-        return false;
-    });
-    
-    animationFrame = requestAnimationFrame(animateParticles);
-}
-
-function handleMouseMove(e) {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-}
-
 $: filteredSkills = selectedCategory === 'All' 
     ? skills 
     : skills.filter(skill => skill.category === selectedCategory);
@@ -140,566 +67,744 @@ $: skillStats = {
     avgLevel: Math.round(skills.reduce((acc, s) => acc + s.level, 0) / skills.length)
 };
 
-onMount(() => {
+// --- WebGL Logic ---
+const vertexShaderSource = `
+    attribute vec2 position;
+    void main() {
+        gl_Position = vec4(position, 0.0, 1.0);
+    }
+`;
+
+const fragmentShaderSource = `
+    precision highp float;
+    uniform vec2 u_resolution;
+    uniform float u_time;
+    uniform vec2 u_mouse;
+
+    // Pseudo-random function
+    float random(vec2 st) {
+        return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
+    }
+
+    // Noise function
+    float noise(vec2 st) {
+        vec2 i = floor(st);
+        vec2 f = fract(st);
+        float a = random(i);
+        float b = random(i + vec2(1.0, 0.0));
+        float c = random(i + vec2(0.0, 1.0));
+        float d = random(i + vec2(1.0, 1.0));
+        vec2 u = f * f * (3.0 - 2.0 * f);
+        return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+    }
+
+    void main() {
+        vec2 st = gl_FragCoord.xy / u_resolution.xy;
+        st.x *= u_resolution.x / u_resolution.y;
+        
+        // Mouse warp effect
+        vec2 mouse = u_mouse * vec2(u_resolution.x/u_resolution.y, 1.0);
+        float dist = distance(st, mouse);
+        float warp = smoothstep(0.5, 0.0, dist) * 0.1;
+        st += warp;
+
+        // Neural Matrix Grid
+        float size = 10.0;
+        vec2 grid = fract(st * size);
+        vec2 cell = floor(st * size);
+        
+        float n = noise(cell + u_time * 0.1);
+        float brightness = smoothstep(0.8, 1.0, sin(n * 6.28 + u_time)) * 0.5;
+        
+        // Data streams
+        float stream = step(0.98, random(vec2(cell.x, floor(u_time * 2.0 + cell.y * 0.2))));
+        brightness += stream * 0.8;
+
+        // Color palette
+        vec3 color = vec3(0.0);
+        color += vec3(0.0, 1.0, 0.4) * brightness; // Cyber Green
+        color += vec3(0.0, 0.5, 1.0) * (1.0 - brightness) * 0.05; // Deep Blue ambient
+
+        // Vignette
+        float vignette = smoothstep(1.2, 0.2, distance(gl_FragCoord.xy / u_resolution.xy, vec2(0.5)));
+        color *= vignette;
+
+        gl_FragColor = vec4(color, 1.0);
+    }
+`;
+
+function initWebGL() {
+    gl = canvas.getContext('webgl');
+    if (!gl) return;
+
+    // Create Shaders
+    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+    program = createProgram(gl, vertexShader, fragmentShader);
+
+    // Set up geometry (full screen quad)
+    const positionAttributeLocation = gl.getAttribLocation(program, 'position');
+    const positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        -1, -1,
+         1, -1,
+        -1,  1,
+        -1,  1,
+         1, -1,
+         1,  1,
+    ]), gl.STATIC_DRAW);
+
+    // Resize handler
+    resize();
+    window.addEventListener('resize', resize);
+    startTime = Date.now();
+
+    render();
+}
+
+function createShader(gl, type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+    }
+    return shader;
+}
+
+function createProgram(gl, vertexShader, fragmentShader) {
+    const program = gl.createProgram();
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        console.error(gl.getProgramInfoLog(program));
+        gl.deleteProgram(program);
+        return null;
+    }
+    return program;
+}
+
+function resize() {
+    if (!canvas) return;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    ctx = canvas.getContext('2d');
-    
-    setTimeout(() => visible = true, 300);
-    requestAnimationFrame(animateParticles);
-    
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
+    gl.viewport(0, 0, canvas.width, canvas.height);
+}
 
+function render() {
+    if (!gl || !program) return;
+
+    gl.useProgram(program);
+
+    const positionAttributeLocation = gl.getAttribLocation(program, 'position');
+    gl.enableVertexAttribArray(positionAttributeLocation);
+    gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+
+    const timeLocation = gl.getUniformLocation(program, 'u_time');
+    const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
+    const mouseLocation = gl.getUniformLocation(program, 'u_mouse');
+
+    gl.uniform1f(timeLocation, (Date.now() - startTime) * 0.001);
+    gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+    gl.uniform2f(mouseLocation, mouseX, 1.0 - mouseY); // Flip Y for shader coords
+
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+    animationFrame = requestAnimationFrame(render);
+}
+
+// Kinetic Type Effect
+function animateText(node, text) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&';
+    let iterations = 0;
+    const interval = setInterval(() => {
+        node.innerText = text.split('').map((letter, index) => {
+            if (index < iterations) return text[index];
+            return chars[Math.floor(Math.random() * chars.length)];
+        }).join('');
+        
+        if (iterations >= text.length) clearInterval(interval);
+        iterations += 1 / 3;
+    }, 30);
+}
+
+function handleMouseMove(e) {
+    mouseX = e.clientX / window.innerWidth;
+    mouseY = e.clientY / window.innerHeight;
+    
+    // Tilt effect for cards
+    document.querySelectorAll('.skill-card-3d').forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const cardX = rect.left + rect.width / 2;
+        const cardY = rect.top + rect.height / 2;
+        
+        const deltaX = (e.clientX - cardX) / 20;
+        const deltaY = (e.clientY - cardY) / 20;
+        
+        card.style.transform = `perspective(1000px) rotateX(${-deltaY}deg) rotateY(${deltaX}deg) scale3d(1.02, 1.02, 1.02)`;
+    });
+}
+
+function handleMouseLeave() {
+    document.querySelectorAll('.skill-card-3d').forEach(card => {
+        card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    });
+}
+
+// Synaptic Lines Drawing
+let synapticLines = [];
+
+function drawSynapticLines(categoryId) {
+    // Clear old lines
+    synapticLines = [];
+}
+
+onMount(() => {
+    initWebGL();
+    setTimeout(() => visible = true, 300);
+    
+    // Animate title
+    const titleElement = document.querySelector('.glitch-text');
+    if(titleElement) animateText(titleElement, 'SKILL_MATRIX_V2.0');
+
+    window.addEventListener('mousemove', handleMouseMove);
     return () => {
-        if (animationFrame) {
-            cancelAnimationFrame(animationFrame);
-        }
+        cancelAnimationFrame(animationFrame);
         window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('resize', resize);
     };
 });
 </script>
 
-<canvas bind:this={canvas} class="particle-canvas"></canvas>
-<div class="hexagon-background"></div>
+<canvas bind:this={canvas} class="webgl-canvas"></canvas>
 
 {#if visible}
-<main in:fade={{ duration: 1000 }} class="main-container">
-    <!-- Holographic Hero Section -->
-    <section class="hero-section" in:fly={{ y: -50, duration: 800, easing: cubicOut }}>
-        <div class="hologram-container">
-            <h1 class="skills-title">
-                <span class="bracket">{'<'}</span>
-                <span class="main-text glitch" data-text="SKILL_MATRIX">SKILL_MATRIX</span>
-                <span class="bracket">{'/>'}</span>
-                <div class="glitch-line"></div>
+<main in:fade={{ duration: 1500 }} class="main-container">
+    
+    <!-- Ultra Header -->
+    <section class="header-section">
+        <div class="hologram-projector">
+            <h1 class="mega-title">
+                <span class="prefix">SYSTEM://</span>
+                <span class="glitch-text" data-text="SKILL_MATRIX">LOADING...</span>
+                <span class="cursor">_</span>
             </h1>
-        </div>
-        <div class="subtitle-container">
-            <div class="scan-line"></div>
-            <p class="subtitle">Technical Proficiency & Framework Mastery</p>
-        </div>
-    </section>
-
-    <!-- Stats Dashboard -->
-    <section class="stats-section" in:fly={{ y: 30, duration: 600, delay: 200, easing: cubicOut }}>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">📊</div>
-                <div class="stat-value counter">{skillStats.total}</div>
-                <div class="stat-label">Total Capabilities</div>
-                <div class="stat-bar"></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🔖</div>
-                <div class="stat-value counter">{skillStats.categories}</div>
-                <div class="stat-label">Specializations</div>
-                <div class="stat-bar" style="background: var(--neon-pink)"></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⚡</div>
-                <div class="stat-value counter">{skillStats.avgLevel}%</div>
-                <div class="stat-label">Avg Proficiency</div>
-                <div class="stat-bar" style="background: var(--cyber-blue)"></div>
+            <div class="subtitle-bar">
+                <div class="bar-fill"></div>
+                <span class="bar-text">NEURAL SYNCHRONIZATION: 100%</span>
             </div>
         </div>
     </section>
 
-    <!-- Category Command Center -->
-    <section class="filter-section" in:fly={{ y: 30, duration: 600, delay: 300, easing: cubicOut }}>
-        <div class="command-interface">
-            <div class="interface-header">
-                <span class="blink">_</span> SELECT_PROTOCOL
+    <!-- Stats HUD -->
+    <section class="hud-stats">
+        <div class="hud-panel glass-panel">
+             <div class="hud-data">
+                <span class="hud-label">CAPABILITIES</span>
+                <span class="hud-value">{skillStats.total}</span>
+             </div>
+             <div class="hud-graph">
+                 {#each Array(10) as _, i}
+                    <div class="graph-bar" style="height: {Math.random() * 100}%; animation-delay: {i * 0.1}s"></div>
+                 {/each}
+             </div>
+        </div>
+        <div class="hud-panel glass-panel center-panel">
+            <div class="radar-scan"></div>
+            <span class="hud-alert blink">SYSTEM OPTIMAL</span>
+        </div>
+        <div class="hud-panel glass-panel">
+            <div class="hud-data">
+                <span class="hud-label">PROFICIENCY</span>
+                <span class="hud-value">{skillStats.avgLevel}%</span>
+             </div>
+             <div class="hex-grid-mini"></div>
+        </div>
+    </section>
+
+    <!-- Command Deck -->
+    <section class="command-deck">
+        <div class="deck-interface glass-panel">
+            <div class="deck-header">
+                <span class="icon">⬢</span> SELECT_PROTOCOL
             </div>
-            <div class="category-buttons">
+            <div class="category-grid">
                 {#each categories as category, i}
                     <button 
-                        class="category-btn"
+                        class="deck-btn"
                         class:active={selectedCategory === category.name}
-                        style="--category-color: {category.color}; --delay: {i * 0.1}s"
+                        style="--cat-color: {category.color}"
                         on:click={() => selectedCategory = category.name}
-                        on:mouseenter={(e) => {
-                            const rect = e.target.getBoundingClientRect();
-                            createParticles(rect.left + rect.width/2, rect.top + rect.height/2, 10, category.color);
-                        }}
                     >
-                        <span class="btn-glitch"></span>
-                        <span class="cat-icon">{category.icon}</span>
-                        <span class="cat-name">{category.name}</span>
-                        {#if selectedCategory === category.name}
-                            <span class="active-indicator" in:scale></span>
-                        {/if}
+                        <div class="btn-bg"></div>
+                        <span class="btn-icon">{category.icon}</span>
+                        <span class="btn-text">{category.name}</span>
+                        <div class="btn-border"></div>
                     </button>
                 {/each}
             </div>
         </div>
     </section>
 
-    <!-- 3D Skill Grid -->
-    <section class="skills-section" in:fly={{ y: 50, duration: 800, delay: 500, easing: cubicOut }}>
-        <div class="skills-grid">
-            {#each filteredSkills as skill, i (skill.name)}
-                <div 
-                    class="skill-card-3d"
-                    class:hovered={hoveredSkill === skill}
-                    style="--skill-color: {categories.find(c => c.name === skill.category)?.color || '#00ff00'}; --delay: {i * 0.05}s;"
-                    in:scale={{ duration: 400, delay: 400 + i * 50, easing: elasticOut }}
-                    on:mouseenter={(e) => {
-                        hoveredSkill = skill;
-                        const rect = e.target.getBoundingClientRect();
-                        createParticles(rect.left + rect.width/2, rect.top + rect.height/2, 15, categories.find(c => c.name === skill.category)?.color);
-                    }}
-                    on:mouseleave={() => hoveredSkill = null}
-                    role="button"
-                    tabindex="0"
-                >
-                    <div class="card-content">
-                        <!-- Holographic Overlay -->
-                        <div class="holo-overlay"></div>
-                        
-                        <!-- Top Decor -->
-                        <div class="card-header">
-                            <span class="skill-icon">{skill.icon}</span>
-                            <div class="skill-percentage">{skill.level}%</div>
+    <!-- Quantum Grid -->
+    <section class="quantum-grid">
+        {#each filteredSkills as skill, i (skill.name)}
+            <div 
+                class="quantum-card skill-card-3d"
+                class:active={hoveredSkill === skill}
+                style="--card-color: {categories.find(c => c.name === skill.category)?.color || '#fff'}; --delay: {i * 0.05}s"
+                in:scale={{ duration: 600, delay: i * 50, easing: elasticOut }}
+                on:mouseenter={() => hoveredSkill = skill}
+                on:mouseleave={() => { hoveredSkill = null; handleMouseLeave(); }}
+                role="button"
+                tabindex="0"
+            >
+                <div class="glass-surface"></div>
+                <div class="neon-border"></div>
+                
+                <div class="card-content">
+                    <div class="icon-chamber">
+                        <div class="icon-glow"></div>
+                        <span class="skill-icon">{skill.icon}</span>
+                    </div>
+                    
+                    <div class="info-module">
+                        <h3 class="skill-name">{skill.name}</h3>
+                        <div class="data-row">
+                            <span class="data-label">PWR_LVL</span>
+                            <span class="data-value">{skill.level}%</span>
                         </div>
-                        
-                        <!-- Card Body -->
-                        <div class="card-body">
-                            <h3 class="skill-name">{skill.name}</h3>
-                            <div class="progress-container">
-                                <div class="progress-bar">
-                                    <div 
-                                        class="progress-fill" 
-                                        style="width: {skill.level}%; background: categories.find(c => c.name === skill.category)?.color;"
-                                    ></div>
-                                </div>
+                        <div class="power-bar-container">
+                            <div class="power-bar-fill" style="width: {skill.level}%; background: var(--card-color)">
+                                <div class="power-particles"></div>
                             </div>
                         </div>
-
-                        <!-- Hover Details -->
-                        {#if hoveredSkill === skill}
-                            <div class="skill-details" in:fade={{ duration: 200 }}>
-                                <p class="skill-desc">{skill.description}</p>
-                                <span class="skill-category-tag">{skill.category}</span>
-                            </div>
-                        {/if}
                     </div>
                 </div>
-            {/each}
-        </div>
+
+                {#if hoveredSkill === skill}
+                    <div class="hologram-details" in:fly={{ y: 20, duration: 300 }}>
+                        <div class="scan-line-overlay"></div>
+                        <p class="desc-text">{skill.description}</p>
+                        <span class="cat-tag">{skill.category}</span>
+                    </div>
+                {/if}
+            </div>
+        {/each}
     </section>
+
 </main>
 {/if}
 
 <style>
-:global(body) {
-    overflow-x: hidden;
-    background: #050505;
-    color: #fff;
-}
-
+/* --- Core Variables --- */
 :global(:root) {
-    --hacker-green: #00ff00;
-    --cyber-blue: #00bfff;
-    --neon-pink: #ff0080;
-    --electric-purple: #8a2be2;
-    --warning-orange: #ff8c00;
+    --neon-green: #00ff41;
+    --neon-blue: #0088ff;
+    --neon-pink: #ff0055;
+    --dark-void: #020202;
+    --glass-bg: rgba(10, 10, 15, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.1);
 }
 
-.particle-canvas {
+:global(body) {
+    background: var(--dark-void);
+    color: #fff;
+    overflow-x: hidden;
+}
+
+/* --- WebGL Canvas --- */
+.webgl-canvas {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.hexagon-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    opacity: 0.03;
-    background-image: 
-        radial-gradient(circle at 25% 25%, rgba(0, 255, 0, 0.1) 2px, transparent 2px),
-        radial-gradient(circle at 75% 75%, rgba(0, 191, 255, 0.1) 2px, transparent 2px);
-    background-size: 60px 60px;
-    animation: hexMove 30s linear infinite;
     z-index: 0;
-}
-
-@keyframes hexMove {
-    0% { transform: translate(0, 0) rotate(0deg); }
-    100% { transform: translate(30px, 30px) rotate(360deg); }
+    pointer-events: none;
 }
 
 .main-container {
     position: relative;
-    z-index: 2;
-    padding: 2rem;
-    max-width: 1600px;
+    z-index: 10;
+    max-width: 1800px;
     margin: 0 auto;
+    padding: 2rem;
 }
 
-/* Holographic Hero */
-.hero-section {
+/* --- Mega Header --- */
+.header-section {
     text-align: center;
-    margin-bottom: 4rem;
-    position: relative;
+    margin-bottom: 5rem;
+    padding-top: 3rem;
 }
 
-.skills-title {
+.mega-title {
     font-family: 'Courier New', monospace;
-    font-size: clamp(3rem, 6vw, 5rem);
-    font-weight: 700;
-    color: var(--hacker-green);
-    text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
-    margin: 0;
+    font-size: clamp(2.5rem, 5vw, 6rem);
+    font-weight: 900;
+    letter-spacing: -2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    text-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+}
+
+.prefix {
+    color: var(--glass-border);
+    font-size: 0.5em;
+    vertical-align: top;
+}
+
+.glitch-text {
+    color: #fff;
     position: relative;
-    display: inline-block;
 }
 
-.bracket {
-    color: var(--cyber-blue);
-    text-shadow: 0 0 15px var(--cyber-blue);
-    animation: pulse 2s infinite;
+.cursor {
+    color: var(--neon-green);
+    animation: blink 0.8s infinite;
 }
 
-.glitch {
+.subtitle-bar {
+    width: 300px;
+    height: 24px;
+    background: rgba(0, 255, 0, 0.1);
+    border: 1px solid var(--neon-green);
+    margin: 1rem auto;
     position: relative;
-    animation: glitch-skew 3s infinite linear alternate-reverse;
-}
-
-.glitch::after {
-    content: attr(data-text);
-    position: absolute;
-    left: 2px;
-    text-shadow: -1px 0 #ff00c1;
-    top: 0;
-    color: var(--hacker-green);
-    background: #050505;
     overflow: hidden;
-    clip: rect(0, 900px, 0, 0);
-    animation: glitch-anim 2s infinite linear alternate-reverse;
+    skew: -20deg;
 }
 
-@keyframes glitch-anim {
-    0% { clip: rect(44px, 9999px, 56px, 0); transform: skew(0.5deg); }
-    5% { clip: rect(12px, 9999px, 86px, 0); transform: skew(0.4deg); }
-    10% { clip: rect(78px, 9999px, 23px, 0); transform: skew(0.1deg); }
-    15% { clip: rect(65px, 9999px, 3px, 0); transform: skew(0.3deg); }
-    100% { clip: rect(69px, 9999px, 19px, 0); transform: skew(0.2deg); }
-}
-
-.subtitle-container {
-    position: relative;
-    display: inline-block;
-    margin-top: 1rem;
-    padding: 0.5rem 2rem;
-    background: rgba(0, 255, 0, 0.05);
-    border: 1px solid rgba(0, 255, 0, 0.2);
-    border-radius: 4px;
-}
-
-.subtitle {
-    font-family: 'Courier New', monospace;
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 1.1rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-
-.scan-line {
+.bar-fill {
     position: absolute;
     top: 0;
     left: 0;
+    height: 100%;
     width: 100%;
-    height: 2px;
-    background: rgba(0, 255, 0, 0.5);
-    animation: scan 3s linear infinite;
-    box-shadow: 0 0 10px var(--hacker-green);
+    background: repeating-linear-gradient(
+        45deg,
+        var(--neon-green),
+        var(--neon-green) 10px,
+        transparent 10px,
+        transparent 20px
+    );
+    opacity: 0.3;
+    animation: loadBar 2s linear infinite;
 }
 
-@keyframes scan {
-    0% { top: 0; opacity: 1; }
-    100% { top: 100%; opacity: 0; }
+.bar-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    line-height: 22px;
+    font-size: 0.8rem;
+    font-family: 'Courier New', monospace;
+    color: var(--neon-green);
+    font-weight: 700;
 }
 
-/* Stats Dashboard */
-.stats-grid {
+/* --- HUD Stats --- */
+.hud-stats {
     display: flex;
     justify-content: center;
-    gap: 3rem;
-    margin-bottom: 4rem;
+    gap: 2rem;
+    margin-bottom: 5rem;
     flex-wrap: wrap;
 }
 
-.stat-card {
-    background: rgba(20, 20, 20, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 1.5rem 2.5rem;
+.glass-panel {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
     border-radius: 12px;
-    text-align: center;
-    position: relative;
-    backdrop-filter: blur(10px);
-    transition: transform 0.3s ease;
-    min-width: 200px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
-
-.stat-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--hacker-green);
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
-}
-
-.stat-icon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-}
-
-.stat-value {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #fff;
-    font-family: 'Courier New', monospace;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-}
-
-.stat-label {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 0.5rem;
-}
-
-.stat-bar {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: var(--hacker-green);
-    border-radius: 0 0 12px 12px;
-    box-shadow: 0 0 10px currentColor;
-}
-
-/* Command Interface */
-.filter-section {
-    margin-bottom: 4rem;
-}
-
-.command-interface {
-    background: rgba(10, 10, 10, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 1.5rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
     position: relative;
     overflow: hidden;
 }
 
-.interface-header {
+.glass-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    animation: shine 5s infinite;
+}
+
+.hud-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 250px;
+}
+
+.hud-value {
+    font-size: 3rem;
+    font-weight: 800;
     font-family: 'Courier New', monospace;
-    color: var(--hacker-green);
-    margin-bottom: 2rem;
-    font-size: 1.2rem;
-    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+    text-shadow: 0 0 20px rgba(255,255,255,0.5);
+}
+
+.hud-graph {
+    display: flex;
+    gap: 4px;
+    height: 40px;
+    align-items: flex-end;
+    margin-top: 1rem;
+}
+
+.graph-bar {
+    width: 6px;
+    background: var(--neon-green);
+    animation: eqAnim 1s infinite alternate;
+}
+
+.center-panel {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid rgba(0, 255, 65, 0.3);
+}
+
+.radar-scan {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: conic-gradient(from 0deg, transparent 270deg, rgba(0, 255, 65, 0.2));
+    border-radius: 50%;
+    animation: rotate 4s linear infinite;
+}
+
+.hud-alert {
+    color: var(--neon-green);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+/* --- Command Deck --- */
+.command-deck {
+    margin-bottom: 4rem;
+    display: flex;
+    justify-content: center;
+}
+
+.deck-interface {
+    padding: 2rem;
+    border-radius: 20px;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.deck-header {
+    font-family: 'Courier New';
+    color: rgba(255,255,255,0.6);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
     padding-bottom: 1rem;
-    text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    margin-bottom: 1.5rem;
+    letter-spacing: 2px;
 }
 
-.blink {
-    animation: blink 1s infinite;
-}
-
-@keyframes blink {
-    50% { opacity: 0; }
-}
-
-.category-buttons {
+.category-grid {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     justify-content: center;
 }
 
-.category-btn {
+.deck-btn {
     position: relative;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    color: rgba(255, 255, 255, 0.7);
-    font-family: 'Courier New', monospace;
+    padding: 1rem 1.5rem;
+    background: transparent;
+    border: none;
     cursor: pointer;
-    transition: all 0.3s ease;
-    overflow: hidden;
     display: flex;
     align-items: center;
     gap: 0.8rem;
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    color: rgba(255,255,255,0.7);
+    font-weight: 700;
+    transition: all 0.3s;
 }
 
-.category-btn:hover, .category-btn.active {
-    background: rgba(var(--category-color), 0.1);
-    border-color: var(--category-color);
-    color: #fff;
-    box-shadow: 0 0 20px var(--category-color), inset 0 0 10px rgba(0,0,0,0.5);
-    text-shadow: 0 0 8px var(--category-color);
-    transform: translateY(-2px);
-}
-
-.active-indicator {
-    width: 8px;
-    height: 8px;
-    background: var(--category-color);
-    border-radius: 50%;
-    box-shadow: 0 0 10px var(--category-color);
-}
-
-/* 3D Skill Cards */
-.skills-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
-    perspective: 1000px;
-}
-
-.skill-card-3d {
-    position: relative;
-    height: 180px;
-    background: rgba(15, 15, 15, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 16px;
-    padding: 1.5rem;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    cursor: pointer;
-    overflow: hidden;
-    backdrop-filter: blur(20px);
-}
-
-.skill-card-3d:hover {
-    transform: translateY(-10px) scale(1.02);
-    border-color: var(--skill-color);
-    box-shadow: 
-        0 15px 35px rgba(0, 0, 0, 0.5),
-        0 0 30px var(--skill-color);
-    z-index: 10;
-}
-
-.holo-overlay {
+.btn-bg {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.05) 0%,
-        rgba(255, 255, 255, 0) 50%,
-        rgba(255, 255, 255, 0.05) 100%
-    );
-    pointer-events: none;
-    z-index: 0;
+    inset: 0;
+    background: rgba(255,255,255,0.02);
+    transform: skew(-15deg);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s;
 }
 
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+.deck-btn:hover .btn-bg, .deck-btn.active .btn-bg {
+    background: rgba(var(--cat-color), 0.1);
+    border-color: var(--cat-color);
+    box-shadow: 0 0 15px var(--cat-color);
+}
+
+.btn-text, .btn-icon {
     position: relative;
     z-index: 2;
+}
+
+/* --- Quantum Grid --- */
+.quantum-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2.5rem;
+    perspective: 2000px;
+}
+
+.quantum-card {
+    position: relative;
+    height: 200px;
+    background: rgba(10, 10, 10, 0.4);
+    border-radius: 16px;
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out; /* Smooth JS tilt */
+    cursor: pointer;
+}
+
+.glass-surface {
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    pointer-events: none;
+}
+
+.neon-border {
+    position: absolute;
+    inset: -2px;
+    border-radius: 18px;
+    background: linear-gradient(45deg, var(--card-color), transparent, var(--card-color));
+    opacity: 0;
+    transition: opacity 0.3s;
+    filter: blur(10px);
+    z-index: -1;
+}
+
+.quantum-card:hover .neon-border {
+    opacity: 0.6;
+}
+
+.card-content {
+    position: relative;
+    z-index: 2;
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.icon-chamber {
+    width: 60px;
+    height: 60px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
 .skill-icon {
-    font-size: 2.5rem;
-    filter: drop-shadow(0 0 10px var(--skill-color));
-}
-
-.skill-percentage {
-    font-family: 'Courier New', monospace;
-    font-size: 1.2rem;
-    font-weight: 800;
-    color: var(--skill-color);
-    text-shadow: 0 0 10px var(--skill-color);
+    font-size: 2rem;
+    filter: drop-shadow(0 0 10px var(--card-color));
 }
 
 .skill-name {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: 700;
-    margin-bottom: 1rem;
-    position: relative;
-    z-index: 2;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(0,0,0,0.5);
 }
 
-.progress-container {
-    height: 6px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
+.power-bar-container {
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    margin-top: 0.5rem;
+    border-radius: 2px;
     overflow: hidden;
-    position: relative;
-    z-index: 2;
 }
 
-.progress-fill {
+.power-bar-fill {
     height: 100%;
-    border-radius: 3px;
     box-shadow: 0 0 10px currentColor;
-    background: var(--skill-color);
-    transition: width 1s ease-out;
 }
 
-.skill-details {
+/* Hologram Details Overlay */
+.hologram-details {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(10, 10, 10, 0.95);
-    padding: 1.5rem;
+    inset: 0;
+    background: rgba(5, 5, 5, 0.95);
+    border-radius: 16px;
+    padding: 2rem;
+    z-index: 10;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    z-index: 5;
-    backdrop-filter: blur(20px);
+    border: 1px solid var(--card-color);
+    box-shadow: 0 0 30px var(--card-color);
 }
 
-.skill-desc {
-    font-size: 0.9rem;
-    line-height: 1.5;
-    color: rgba(255, 255, 255, 0.9);
+.scan-line-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent 50%, rgba(0,0,0,0.5) 50%);
+    background-size: 100% 4px;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.desc-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
     margin-bottom: 1rem;
+    position: relative;
+    z-index: 2;
 }
 
-.skill-category-tag {
-    font-size: 0.75rem;
+.cat-tag {
+    font-size: 0.7rem;
     text-transform: uppercase;
-    padding: 0.4rem 0.8rem;
-    border: 1px solid var(--skill-color);
-    color: var(--skill-color);
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 0 15px var(--skill-color);
+    color: var(--card-color);
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 2;
 }
+
+/* --- Animations --- */
+@keyframes blink { 50% { opacity: 0; } }
+@keyframes loadBar { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+@keyframes rotate { 100% { transform: rotate(360deg); } }
+@keyframes shine { 0% { left: -100%; } 20% { left: 100%; } 100% { left: 100%; } }
+@keyframes eqAnim { 0% { height: 20%; } 100% { height: 90%; } }
 
 @media (max-width: 768px) {
-    .skills-title { font-size: 2.5rem; }
-    .stats-grid { gap: 1rem; }
-    .stat-card { min-width: 140px; padding: 1rem; }
-    .stat-value { font-size: 1.8rem; }
-    .skills-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+    .header-section { margin-bottom: 3rem; }
+    .mega-title { font-size: 3rem; }
+    .stats-hud { flex-direction: column; }
+    .glass-panel { width: 100%; }
+    .center-panel { display: none; }
 }
 </style>
