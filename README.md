@@ -1,4 +1,4 @@
-# 🛡️ Jerome Andrew K — Portfolio
+# 🛡️ Jerome Andrew K - Portfolio
 
 <div align="center">
 
@@ -33,7 +33,7 @@
 
 ## 🔍 About This Portfolio
 
-This isn't just a portfolio—it's a **live cybersecurity lab** with style. Every element is designed to reflect my journey in:
+This isn't just a portfolio-it's a **live cybersecurity lab** with style. Every element is designed to reflect my journey in:
 
 - 🎯 **Ethical Hacking & Penetration Testing**
 - 🔒 **Cybersecurity Research & Development**
