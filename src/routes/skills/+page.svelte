@@ -10,14 +10,16 @@ let particles = [];
 let hoveredSkill = null;
 let selectedCategory = 'All';
 let animationFrame;
+let mouseX = 0;
+let mouseY = 0;
 
 const categories = [
     { name: 'All', color: '#00ff00', icon: '🌐' },
     { name: 'Offensive Security', color: '#ff0080', icon: '⚔️' },
+    { name: 'Web Development', color: '#ff6b00', icon: '⚡' },
+    { name: 'Full Stack Development', color: '#00ff80', icon: '🔄' },
     { name: 'Programming', color: '#00bfff', icon: '💻' },
-    { name: 'Tools & Frameworks', color: '#ff8c00', icon: '🛠️' },
-    { name: 'AI & ML', color: '#8a2be2', icon: '🤖' },
-    { name: 'Cloud & Infrastructure', color: '#00ff80', icon: '☁️' }
+    { name: 'AI & ML', color: '#8a2be2', icon: '🤖' }
 ];
 
 const skills = [
@@ -27,53 +29,30 @@ const skills = [
     { name: 'Binary Exploitation', level: 85, category: 'Offensive Security', icon: '⚡', description: 'Buffer overflows, ROP chains, heap exploitation' },
     { name: 'Reverse Engineering', level: 88, category: 'Offensive Security', icon: '🔧', description: 'Static and dynamic analysis, binary reversing' },
     { name: 'Cryptography', level: 87, category: 'Offensive Security', icon: '🔐', description: 'Crypto attacks, hash cracking, cipher analysis' },
-    { name: 'Forensics', level: 83, category: 'Offensive Security', icon: '🔍', description: 'Digital forensics and incident response' },
-    { name: 'OSINT', level: 90, category: 'Offensive Security', icon: '🕵️', description: 'Open-source intelligence gathering and analysis' },
-    { name: 'Network Security', level: 89, category: 'Offensive Security', icon: '🌐', description: 'Network analysis, monitoring, and defense' },
-    { name: 'Privilege Escalation', level: 86, category: 'Offensive Security', icon: '⬆️', description: 'Linux/Windows privilege escalation techniques' },
-    { name: 'Social Engineering', level: 80, category: 'Offensive Security', icon: '🎭', description: 'Phishing, pretexting, and human-based attacks' },
     
-    // Programming Languages
+    // Web Development
+    { name: 'Angular', level: 85, category: 'Web Development', icon: '🅰️', description: 'Component-based architecture, RxJS, NgRx' },
+    { name: 'HTML5/CSS3', level: 95, category: 'Web Development', icon: '🎨', description: 'Semantic HTML, Flexbox, Grid, Animations' },
+    { name: 'JavaScript', level: 92, category: 'Web Development', icon: '📜', description: 'ES6+, Asynchronous programming, DOM manipulation' },
+    { name: 'Svelte', level: 90, category: 'Web Development', icon: '🔥', description: 'Reactive components, state management, transitions' },
+    { name: 'TailwindCSS', level: 94, category: 'Web Development', icon: '🌊', description: 'Utility-first CSS, custom design systems' },
+
+    // Full Stack Development
+    { name: 'Next.js', level: 88, category: 'Full Stack Development', icon: '▲', description: 'SSR, ISR, API Routes, Middleware' },
+    { name: 'Node.js', level: 90, category: 'Full Stack Development', icon: '🟢', description: 'Event-driven architecture, RESTful APIs' },
+    { name: 'Express', level: 89, category: 'Full Stack Development', icon: '🚂', description: 'Middleware development, routing' },
+    { name: 'MongoDB', level: 86, category: 'Full Stack Development', icon: '🍃', description: 'NoSQL schema design, aggregation pipelines' },
+    { name: 'PostgreSQL', level: 85, category: 'Full Stack Development', icon: '🐘', description: 'Relational modelling, advanced queries' },
+    { name: 'API Design', level: 88, category: 'Full Stack Development', icon: '🔌', description: 'REST, GraphQL, OpenAPI specification' },
+
+    // Programming
     { name: 'Python', level: 95, category: 'Programming', icon: '🐍', description: 'Automation, scripting, exploit development' },
-    { name: 'Bash/Shell', level: 92, category: 'Programming', icon: '💻', description: 'Shell scripting and automation' },
-    { name: 'JavaScript', level: 85, category: 'Programming', icon: '⚡', description: 'Frontend and Node.js development' },
-    { name: 'C/C++', level: 78, category: 'Programming', icon: '⚙️', description: 'System programming and exploit development' },
-    { name: 'SQL', level: 88, category: 'Programming', icon: '🗄️', description: 'Database querying and SQL injection' },
-    { name: 'ASP.NET', level: 82, category: 'Programming', icon: '🌐', description: 'Web application development' },
-    { name: 'Go', level: 75, category: 'Programming', icon: '🚀', description: 'Concurrent programming and tooling' },
+    { name: 'Go', level: 75, category: 'Programming', icon: '🚀', description: 'Concurrent systems, CLI tools' },
+    { name: 'Bash/Shell', level: 92, category: 'Programming', icon: '💻', description: 'System automation, pipeline scripting' },
     
-    // Tools & Frameworks
-    { name: 'Burp Suite', level: 93, category: 'Tools & Frameworks', icon: '🔥', description: 'Web application security testing' },
-    { name: 'Metasploit', level: 90, category: 'Tools & Frameworks', icon: '💣', description: 'Exploitation framework and post-exploitation' },
-    { name: 'Nmap', level: 94, category: 'Tools & Frameworks', icon: '📡', description: 'Network scanning and reconnaissance' },
-    { name: 'Wireshark', level: 91, category: 'Tools & Frameworks', icon: '🦈', description: 'Network protocol analysis' },
-    { name: 'Ghidra', level: 85, category: 'Tools & Frameworks', icon: '👾', description: 'Reverse engineering and disassembly' },
-    { name: 'Radare2', level: 82, category: 'Tools & Frameworks', icon: '🔬', description: 'Binary analysis framework' },
-    { name: 'IDA Pro', level: 80, category: 'Tools & Frameworks', icon: '🔭', description: 'Interactive disassembler' },
-    { name: 'John/Hashcat', level: 88, category: 'Tools & Frameworks', icon: '🔓', description: 'Password cracking and hash analysis' },
-    { name: 'pwntools', level: 87, category: 'Tools & Frameworks', icon: '🛠️', description: 'CTF framework and exploit development' },
-    { name: 'SQLmap', level: 89, category: 'Tools & Frameworks', icon: '💉', description: 'Automated SQL injection tool' },
-    { name: 'Docker', level: 86, category: 'Tools & Frameworks', icon: '🐳', description: 'Containerization and deployment' },
-    { name: 'Git', level: 90, category: 'Tools & Frameworks', icon: '📦', description: 'Version control and collaboration' },
-    
-    // AI & Machine Learning
-    { name: 'Machine Learning', level: 85, category: 'AI & ML', icon: '🧠', description: 'ML algorithms and model training' },
-    { name: 'Neural Networks', level: 82, category: 'AI & ML', icon: '🕸️', description: 'Deep learning and neural architectures' },
-    { name: 'Anomaly Detection', level: 88, category: 'AI & ML', icon: '🔍', description: 'ML-based threat detection' },
-    { name: 'AI Security', level: 83, category: 'AI & ML', icon: '🛡️', description: 'Securing AI systems and adversarial ML' },
-    { name: 'Data Analysis', level: 87, category: 'AI & ML', icon: '📊', description: 'Data processing and statistical analysis' },
-    { name: 'Scikit-learn', level: 84, category: 'AI & ML', icon: '📈', description: 'ML library for Python' },
-    { name: 'TensorFlow', level: 78, category: 'AI & ML', icon: '🔷', description: 'Deep learning framework' },
-    { name: 'Pandas/NumPy', level: 86, category: 'AI & ML', icon: '🐼', description: 'Data manipulation libraries' },
-    
-    // Cloud & Infrastructure
-    { name: 'AWS', level: 85, category: 'Cloud & Infrastructure', icon: '☁️', description: 'Amazon Web Services infrastructure' },
-    { name: 'Linux Administration', level: 93, category: 'Cloud & Infrastructure', icon: '🐧', description: 'Linux system administration and hardening' },
-    { name: 'Kali Linux', level: 95, category: 'Cloud & Infrastructure', icon: '🐉', description: 'Penetration testing distribution' },
-    { name: 'Active Directory', level: 80, category: 'Cloud & Infrastructure', icon: '🏢', description: 'AD enumeration and exploitation' },
-    { name: 'Cloud Security', level: 82, category: 'Cloud & Infrastructure', icon: '🔒', description: 'Cloud security best practices' },
-    { name: 'GCP', level: 78, category: 'Cloud & Infrastructure', icon: '☁️', description: 'Google Cloud Platform' },
-    { name: 'CI/CD', level: 81, category: 'Cloud & Infrastructure', icon: '🔄', description: 'Continuous integration and deployment' },
+    // AI & ML
+    { name: 'Machine Learning', level: 85, category: 'AI & ML', icon: '🧠', description: 'Algorithm implementation, model training' },
+    { name: 'TensorFlow', level: 78, category: 'AI & ML', icon: '🔷', description: 'Deep learning models, neural networks' }
 ];
 
 class Particle {
@@ -83,8 +62,8 @@ class Particle {
         this.vx = (Math.random() - 0.5) * 4;
         this.vy = (Math.random() - 0.5) * 4;
         this.life = 1;
-        this.decay = Math.random() * 0.02 + 0.01;
-        this.size = Math.random() * 4 + 2;
+        this.decay = Math.random() * 0.02 + 0.015;
+        this.size = Math.random() * 3 + 2;
         this.color = color;
         this.alpha = 1;
     }
@@ -94,15 +73,15 @@ class Particle {
         this.y += this.vy;
         this.life -= this.decay;
         this.alpha = this.life;
-        this.vx *= 0.98;
-        this.vy *= 0.98;
+        this.vx *= 0.95;
+        this.vy *= 0.95;
     }
 
     draw(ctx) {
         ctx.save();
         ctx.globalAlpha = this.alpha;
         ctx.fillStyle = this.color;
-        ctx.shadowBlur = 15;
+        ctx.shadowBlur = 10;
         ctx.shadowColor = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -112,6 +91,7 @@ class Particle {
 }
 
 function createParticles(x, y, count, color) {
+    if (!ctx) return;
     for (let i = 0; i < count; i++) {
         particles.push(new Particle(x, y, color));
     }
@@ -123,12 +103,12 @@ function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     // Ambient particles
-    if (Math.random() < 0.015) {
+    if (Math.random() < 0.05) {
         const colors = ['#00ff00', '#ff0080', '#00bfff', '#ff8c00', '#8a2be2'];
         createParticles(
             Math.random() * canvas.width,
             Math.random() * canvas.height,
-            2,
+            1,
             colors[Math.floor(Math.random() * colors.length)]
         );
     }
@@ -143,6 +123,11 @@ function animateParticles() {
     });
     
     animationFrame = requestAnimationFrame(animateParticles);
+}
+
+function handleMouseMove(e) {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
 }
 
 $: filteredSkills = selectedCategory === 'All' 
@@ -161,116 +146,144 @@ onMount(() => {
     ctx = canvas.getContext('2d');
     
     setTimeout(() => visible = true, 300);
-    animateParticles();
+    requestAnimationFrame(animateParticles);
     
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
     return () => {
         if (animationFrame) {
             cancelAnimationFrame(animationFrame);
         }
+        window.removeEventListener('mousemove', handleMouseMove);
     };
 });
 </script>
 
-<!-- Particle Canvas -->
 <canvas bind:this={canvas} class="particle-canvas"></canvas>
+<div class="hexagon-background"></div>
 
 {#if visible}
 <main in:fade={{ duration: 1000 }} class="main-container">
-    <!-- Hero Section -->
+    <!-- Holographic Hero Section -->
     <section class="hero-section" in:fly={{ y: -50, duration: 800, easing: cubicOut }}>
-        <h1 class="skills-title">
-            <span class="bracket">{'<'}</span>
-            <span class="main-text">SKILLS</span>
-            <span class="bracket">{'/>'}</span>
-        </h1>
-        <p class="subtitle">Technical expertise and professional capabilities</p>
+        <div class="hologram-container">
+            <h1 class="skills-title">
+                <span class="bracket">{'<'}</span>
+                <span class="main-text glitch" data-text="SKILL_MATRIX">SKILL_MATRIX</span>
+                <span class="bracket">{'/>'}</span>
+                <div class="glitch-line"></div>
+            </h1>
+        </div>
+        <div class="subtitle-container">
+            <div class="scan-line"></div>
+            <p class="subtitle">Technical Proficiency & Framework Mastery</p>
+        </div>
     </section>
 
-    <!-- Stats Section -->
+    <!-- Stats Dashboard -->
     <section class="stats-section" in:fly={{ y: 30, duration: 600, delay: 200, easing: cubicOut }}>
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number">{skillStats.total}</div>
-                <div class="stat-label">Total Skills</div>
+                <div class="stat-icon">📊</div>
+                <div class="stat-value counter">{skillStats.total}</div>
+                <div class="stat-label">Total Capabilities</div>
+                <div class="stat-bar"></div>
             </div>
-            <div class="stat-divider"></div>
             <div class="stat-card">
-                <div class="stat-number">{skillStats.categories}</div>
-                <div class="stat-label">Categories</div>
+                <div class="stat-icon">🔖</div>
+                <div class="stat-value counter">{skillStats.categories}</div>
+                <div class="stat-label">Specializations</div>
+                <div class="stat-bar" style="background: var(--neon-pink)"></div>
             </div>
-            <div class="stat-divider"></div>
             <div class="stat-card">
-                <div class="stat-number">{skillStats.avgLevel}%</div>
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value counter">{skillStats.avgLevel}%</div>
                 <div class="stat-label">Avg Proficiency</div>
+                <div class="stat-bar" style="background: var(--cyber-blue)"></div>
             </div>
         </div>
     </section>
 
-    <!-- Category Filter -->
+    <!-- Category Command Center -->
     <section class="filter-section" in:fly={{ y: 30, duration: 600, delay: 300, easing: cubicOut }}>
-        <div class="filter-container">
-            <div class="filter-label">SELECT_CATEGORY:</div>
+        <div class="command-interface">
+            <div class="interface-header">
+                <span class="blink">_</span> SELECT_PROTOCOL
+            </div>
             <div class="category-buttons">
                 {#each categories as category, i}
                     <button 
                         class="category-btn"
                         class:active={selectedCategory === category.name}
-                        style="--category-color: {category.color};"
-                        in:scale={{ duration: 300, delay: 400 + i * 100, easing: elasticOut }}
+                        style="--category-color: {category.color}; --delay: {i * 0.1}s"
                         on:click={() => selectedCategory = category.name}
-                        on:mouseenter={() => createParticles(window.innerWidth / 2, window.innerHeight / 2, 8, category.color)}
+                        on:mouseenter={(e) => {
+                            const rect = e.target.getBoundingClientRect();
+                            createParticles(rect.left + rect.width/2, rect.top + rect.height/2, 10, category.color);
+                        }}
                     >
+                        <span class="btn-glitch"></span>
                         <span class="cat-icon">{category.icon}</span>
-                        <span class="cat-name">{category.name.toUpperCase().replace(' ', '_')}</span>
+                        <span class="cat-name">{category.name}</span>
+                        {#if selectedCategory === category.name}
+                            <span class="active-indicator" in:scale></span>
+                        {/if}
                     </button>
                 {/each}
             </div>
         </div>
     </section>
 
-    <!-- Skills Grid -->
+    <!-- 3D Skill Grid -->
     <section class="skills-section" in:fly={{ y: 50, duration: 800, delay: 500, easing: cubicOut }}>
         <div class="skills-grid">
-            {#each filteredSkills as skill, i}
+            {#each filteredSkills as skill, i (skill.name)}
                 <div 
-                    class="skill-hex"
+                    class="skill-card-3d"
                     class:hovered={hoveredSkill === skill}
-                    style="--skill-level: {skill.level}%; --index: {i};"
-                    in:scale={{ duration: 400, delay: 600 + i * 30, easing: elasticOut }}
-                    on:mouseenter={() => {
+                    style="--skill-color: {categories.find(c => c.name === skill.category)?.color || '#00ff00'}; --delay: {i * 0.05}s;"
+                    in:scale={{ duration: 400, delay: 400 + i * 50, easing: elasticOut }}
+                    on:mouseenter={(e) => {
                         hoveredSkill = skill;
-                        const categoryColor = categories.find(c => c.name === skill.category)?.color || '#00ff00';
-                        createParticles(window.innerWidth / 2, window.innerHeight / 2, 15, categoryColor);
+                        const rect = e.target.getBoundingClientRect();
+                        createParticles(rect.left + rect.width/2, rect.top + rect.height/2, 15, categories.find(c => c.name === skill.category)?.color);
                     }}
                     on:mouseleave={() => hoveredSkill = null}
                     role="button"
                     tabindex="0"
                 >
-                    <div class="hex-inner">
-                        <div class="hex-content">
-                            <div class="skill-icon">{skill.icon}</div>
-                            <div class="skill-name">{skill.name}</div>
-                            <div class="skill-level-num">{skill.level}%</div>
+                    <div class="card-content">
+                        <!-- Holographic Overlay -->
+                        <div class="holo-overlay"></div>
+                        
+                        <!-- Top Decor -->
+                        <div class="card-header">
+                            <span class="skill-icon">{skill.icon}</span>
+                            <div class="skill-percentage">{skill.level}%</div>
                         </div>
                         
-                        <!-- Circular Progress -->
-                        <svg class="progress-ring" viewBox="0 0 100 100">
-                            <circle class="progress-ring-bg" cx="50" cy="50" r="45" />
-                            <circle 
-                                class="progress-ring-fill" 
-                                cx="50" 
-                                cy="50" 
-                                r="45"
-                                style="--progress: {(283 - (283 * skill.level) / 100)};"
-                            />
-                        </svg>
-                        
-                        <!-- Hover Tooltip -->
+                        <!-- Card Body -->
+                        <div class="card-body">
+                            <h3 class="skill-name">{skill.name}</h3>
+                            <div class="progress-container">
+                                <div class="progress-bar">
+                                    <div 
+                                        class="progress-fill" 
+                                        style="width: {skill.level}%; background: categories.find(c => c.name === skill.category)?.color;"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hover Details -->
                         {#if hoveredSkill === skill}
-                            <div class="skill-tooltip" in:scale={{ duration: 200 }}>
-                                <div class="tooltip-title">{skill.name}</div>
-                                <div class="tooltip-desc">{skill.description}</div>
-                                <div class="tooltip-category">{skill.category}</div>
+                            <div class="skill-details" in:fade={{ duration: 200 }}>
+                                <p class="skill-desc">{skill.description}</p>
+                                <span class="skill-category-tag">{skill.category}</span>
                             </div>
                         {/if}
                     </div>
@@ -284,7 +297,8 @@ onMount(() => {
 <style>
 :global(body) {
     overflow-x: hidden;
-    background: #0a0a0a;
+    background: #050505;
+    color: #fff;
 }
 
 :global(:root) {
@@ -295,7 +309,6 @@ onMount(() => {
     --warning-orange: #ff8c00;
 }
 
-/* Particle Canvas */
 .particle-canvas {
     position: fixed;
     top: 0;
@@ -306,120 +319,210 @@ onMount(() => {
     z-index: 1;
 }
 
-/* Main Container */
+.hexagon-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    opacity: 0.03;
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(0, 255, 0, 0.1) 2px, transparent 2px),
+        radial-gradient(circle at 75% 75%, rgba(0, 191, 255, 0.1) 2px, transparent 2px);
+    background-size: 60px 60px;
+    animation: hexMove 30s linear infinite;
+    z-index: 0;
+}
+
+@keyframes hexMove {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(30px, 30px) rotate(360deg); }
+}
+
 .main-container {
     position: relative;
     z-index: 2;
-    min-height: 100vh;
-    padding: 2rem 1rem;
-    max-width: 1800px;
+    padding: 2rem;
+    max-width: 1600px;
     margin: 0 auto;
 }
 
-/* Hero Section */
+/* Holographic Hero */
 .hero-section {
     text-align: center;
-    margin-bottom: 3rem;
-    padding: 2rem 0;
+    margin-bottom: 4rem;
+    position: relative;
 }
 
 .skills-title {
     font-family: 'Courier New', monospace;
-    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-size: clamp(3rem, 6vw, 5rem);
     font-weight: 700;
     color: var(--hacker-green);
-    text-shadow: 
-        0 0 10px var(--hacker-green),
-        0 0 20px var(--hacker-green),
-        0 0 40px var(--hacker-green);
-    margin-bottom: 1rem;
-    letter-spacing: 0.1em;
-    animation: titlePulse 3s ease-in-out infinite alternate;
-}
-
-@keyframes titlePulse {
-    0% { text-shadow: 0 0 10px var(--hacker-green), 0 0 20px var(--hacker-green); }
-    100% { text-shadow: 0 0 20px var(--hacker-green), 0 0 40px var(--hacker-green), 0 0 60px var(--hacker-green); }
+    text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    margin: 0;
+    position: relative;
+    display: inline-block;
 }
 
 .bracket {
     color: var(--cyber-blue);
     text-shadow: 0 0 15px var(--cyber-blue);
+    animation: pulse 2s infinite;
 }
 
-.main-text {
+.glitch {
+    position: relative;
+    animation: glitch-skew 3s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 2px;
+    text-shadow: -1px 0 #ff00c1;
+    top: 0;
+    color: var(--hacker-green);
+    background: #050505;
+    overflow: hidden;
+    clip: rect(0, 900px, 0, 0);
+    animation: glitch-anim 2s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+    0% { clip: rect(44px, 9999px, 56px, 0); transform: skew(0.5deg); }
+    5% { clip: rect(12px, 9999px, 86px, 0); transform: skew(0.4deg); }
+    10% { clip: rect(78px, 9999px, 23px, 0); transform: skew(0.1deg); }
+    15% { clip: rect(65px, 9999px, 3px, 0); transform: skew(0.3deg); }
+    100% { clip: rect(69px, 9999px, 19px, 0); transform: skew(0.2deg); }
+}
+
+.subtitle-container {
+    position: relative;
     display: inline-block;
+    margin-top: 1rem;
+    padding: 0.5rem 2rem;
+    background: rgba(0, 255, 0, 0.05);
+    border: 1px solid rgba(0, 255, 0, 0.2);
+    border-radius: 4px;
 }
 
 .subtitle {
-    font-size: 1.2rem;
-    color: rgba(255, 255, 255, 0.7);
-    font-weight: 300;
-    letter-spacing: 0.05em;
+    font-family: 'Courier New', monospace;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
-/* Stats Section */
-.stats-section {
-    margin-bottom: 3rem;
+.scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: rgba(0, 255, 0, 0.5);
+    animation: scan 3s linear infinite;
+    box-shadow: 0 0 10px var(--hacker-green);
 }
 
+@keyframes scan {
+    0% { top: 0; opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+
+/* Stats Dashboard */
 .stats-grid {
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: 2rem;
-    padding: 2rem;
-    background: rgba(0, 255, 0, 0.03);
-    border: 1px solid rgba(0, 255, 0, 0.2);
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
-    max-width: 800px;
-    margin: 0 auto;
+    gap: 3rem;
+    margin-bottom: 4rem;
+    flex-wrap: wrap;
 }
 
 .stat-card {
+    background: rgba(20, 20, 20, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem 2.5rem;
+    border-radius: 12px;
     text-align: center;
+    position: relative;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease;
+    min-width: 200px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
-.stat-number {
+.stat-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--hacker-green);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.stat-value {
     font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--hacker-green);
-    text-shadow: 0 0 15px var(--hacker-green);
+    font-weight: 800;
+    color: #fff;
     font-family: 'Courier New', monospace;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 .stat-label {
-    font-size: 0.9rem;
     color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 1px;
     margin-top: 0.5rem;
 }
 
-.stat-divider {
-    width: 2px;
-    height: 60px;
-    background: linear-gradient(to bottom, transparent, var(--hacker-green), transparent);
-    opacity: 0.3;
+.stat-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--hacker-green);
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 0 10px currentColor;
 }
 
-/* Filter Section */
+/* Command Interface */
 .filter-section {
     margin-bottom: 4rem;
 }
 
-.filter-container {
-    text-align: center;
+.command-interface {
+    background: rgba(10, 10, 10, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
 }
 
-.filter-label {
+.interface-header {
     font-family: 'Courier New', monospace;
-    font-size: 1.1rem;
     color: var(--hacker-green);
-    text-shadow: 0 0 10px var(--hacker-green);
-    letter-spacing: 0.1em;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    font-size: 1.2rem;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+    padding-bottom: 1rem;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.blink {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
 }
 
 .category-buttons {
@@ -427,261 +530,176 @@ onMount(() => {
     flex-wrap: wrap;
     gap: 1rem;
     justify-content: center;
-    max-width: 1200px;
-    margin: 0 auto;
 }
 
 .category-btn {
+    position: relative;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    background: rgba(10, 10, 10, 0.9);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.8);
-    padding: 0.9rem 1.8rem;
-    border-radius: 30px;
-    font-family: 'Courier New', monospace;
+    gap: 0.8rem;
     font-size: 0.9rem;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    position: relative;
-    overflow: hidden;
 }
 
-.category-btn::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, var(--category-color), transparent);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.category-btn:hover {
-    border-color: var(--category-color);
-    color: var(--category-color);
-    text-shadow: 0 0 10px var(--category-color);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3), 0 0 20px var(--category-color);
-}
-
-.category-btn:hover::before {
-    opacity: 0.1;
-}
-
-.category-btn.active {
-    background: linear-gradient(135deg, var(--category-color), rgba(0, 0, 0, 0.8));
+.category-btn:hover, .category-btn.active {
+    background: rgba(var(--category-color), 0.1);
     border-color: var(--category-color);
     color: #fff;
-    box-shadow: 0 0 30px var(--category-color);
+    box-shadow: 0 0 20px var(--category-color), inset 0 0 10px rgba(0,0,0,0.5);
+    text-shadow: 0 0 8px var(--category-color);
+    transform: translateY(-2px);
 }
 
-.cat-icon {
-    font-size: 1.3rem;
-    position: relative;
-    z-index: 1;
+.active-indicator {
+    width: 8px;
+    height: 8px;
+    background: var(--category-color);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--category-color);
 }
 
-.cat-name {
-    position: relative;
-    z-index: 1;
-}
-
-/* Skills Section */
-.skills-section {
-    margin: 4rem 0;
-}
-
+/* 3D Skill Cards */
 .skills-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 2.5rem;
-    padding: 2rem 0;
-    justify-items: center;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    perspective: 1000px;
 }
 
-/* Hexagonal Skill Card */
-.skill-hex {
+.skill-card-3d {
     position: relative;
-    width: 180px;
     height: 180px;
+    background: rgba(15, 15, 15, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     cursor: pointer;
-    transition: all 0.3s ease;
-    animation: hexFloat 3s ease-in-out infinite;
-    animation-delay: calc(var(--index) * 0.1s);
+    overflow: hidden;
+    backdrop-filter: blur(20px);
 }
 
-@keyframes hexFloat {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
-
-.skill-hex:hover {
-    transform: scale(1.15) translateY(-15px) !important;
+.skill-card-3d:hover {
+    transform: translateY(-10px) scale(1.02);
+    border-color: var(--skill-color);
+    box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.5),
+        0 0 30px var(--skill-color);
     z-index: 10;
 }
 
-.hex-inner {
-    position: relative;
+.holo-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(10, 10, 10, 0.95);
-    border: 2px solid rgba(0, 255, 0, 0.3);
-    border-radius: 15px;
-    padding: 1.5rem;
-    backdrop-filter: blur(15px);
-    overflow: visible;
-    transition: all 0.3s ease;
-    box-shadow: 
-        0 10px 30px rgba(0, 0, 0, 0.5),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0) 50%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    pointer-events: none;
+    z-index: 0;
 }
 
-.skill-hex:hover .hex-inner {
-    border-color: var(--hacker-green);
-    background: rgba(0, 255, 0, 0.05);
-    box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.6),
-        0 0 40px var(--hacker-green),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.hex-content {
+.card-header {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    height: 100%;
-    text-align: center;
+    margin-bottom: 1rem;
     position: relative;
     z-index: 2;
 }
 
 .skill-icon {
-    font-size: 3rem;
-    margin-bottom: 0.75rem;
-    filter: drop-shadow(0 0 10px var(--hacker-green));
+    font-size: 2.5rem;
+    filter: drop-shadow(0 0 10px var(--skill-color));
+}
+
+.skill-percentage {
+    font-family: 'Courier New', monospace;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--skill-color);
+    text-shadow: 0 0 10px var(--skill-color);
 }
 
 .skill-name {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 0.5rem;
-    line-height: 1.3;
-}
-
-.skill-level-num {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 700;
-    color: var(--hacker-green);
-    text-shadow: 0 0 10px var(--hacker-green);
-    font-family: 'Courier New', monospace;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 2;
 }
 
-/* Circular Progress Ring */
-.progress-ring {
+.progress-container {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    box-shadow: 0 0 10px currentColor;
+    background: var(--skill-color);
+    transition: width 1s ease-out;
+}
+
+.skill-details {
     position: absolute;
-    inset: -3px;
-    width: calc(100% + 6px);
-    height: calc(100% + 6px);
-    pointer-events: none;
-    transform: rotate(-90deg);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 10, 10, 0.95);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 5;
+    backdrop-filter: blur(20px);
 }
 
-.progress-ring-bg {
-    fill: none;
-    stroke: rgba(255, 255, 255, 0.05);
-    stroke-width: 2;
-}
-
-.progress-ring-fill {
-    fill: none;
-    stroke: var(--hacker-green);
-    stroke-width: 2.5;
-    stroke-linecap: round;
-    stroke-dasharray: 283;
-    stroke-dashoffset: var(--progress);
-    filter: drop-shadow(0 0 8px var(--hacker-green));
-    transition: stroke-dashoffset 1s ease-out;
-}
-
-.skill-hex:hover .progress-ring-fill {
-    stroke-width: 3;
-    filter: drop-shadow(0 0 15px var(--hacker-green));
-}
-
-/* Tooltip */
-.skill-tooltip {
-    position: absolute;
-    top: 110%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.95);
-    border: 1px solid var(--hacker-green);
-    border-radius: 10px;
-    padding: 1rem;
-    min-width: 250px;
-    z-index: 100;
-    pointer-events: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px var(--hacker-green);
-    backdrop-filter: blur(10px);
-}
-
-.tooltip-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--hacker-green);
-    margin-bottom: 0.5rem;
-    text-shadow: 0 0 10px var(--hacker-green);
-}
-
-.tooltip-desc {
-    font-size: 0.85rem;
-    color: rgba(255, 255, 255, 0.8);
+.skill-desc {
+    font-size: 0.9rem;
     line-height: 1.5;
-    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1rem;
 }
 
-.tooltip-category {
+.skill-category-tag {
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.5);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 0.5rem;
-    margin-top: 0.5rem;
-}
-
-/* Responsive Design */
-@media (max-width: 1200px) {
-    .skills-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 2rem; }
-    .skill-hex { width: 160px; height: 160px; }
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--skill-color);
+    color: var(--skill-color);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 15px var(--skill-color);
 }
 
 @media (max-width: 768px) {
-    .main-container { padding: 1.5rem 0.75rem; }
-    .stats-grid { flex-direction: column; gap: 1.5rem; padding: 1.5rem; }
-    .stat-divider { width: 60px; height: 2px; }
-    .category-buttons { gap: 0.75rem; }
-    .category-btn { padding: 0.75rem 1.5rem; font-size: 0.85rem; }
-    .skills-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1.5rem; }
-    .skill-hex { width: 140px; height: 140px; }
-    .skill-icon { font-size: 2.5rem; }
-    .skill-name { font-size: 0.85rem; }
-    .skill-tooltip { min-width: 200px; }
-}
-
-@media (max-width: 480px) {
-    .skills-title { font-size: 2rem; }
-    .skills-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1.25rem; }
-    .skill-hex { width: 120px; height: 120px; }
-    .hex-inner { padding: 1rem; }
-    .skill-icon { font-size: 2rem; }
-    .skill-name { font-size: 0.75rem; }
-    .skill-level-num { font-size: 0.95rem; }
+    .skills-title { font-size: 2.5rem; }
+    .stats-grid { gap: 1rem; }
+    .stat-card { min-width: 140px; padding: 1rem; }
+    .stat-value { font-size: 1.8rem; }
+    .skills-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
 }
 </style>
-
