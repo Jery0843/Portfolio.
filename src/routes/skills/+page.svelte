@@ -5,13 +5,48 @@ import { cubicOut, elasticOut } from 'svelte/easing';
 
 let visible = false;
 let canvas;
-let ctx;
-let particles = [];
+let context;
+let width;
+let height;
+let matrix;
 let hoveredSkill = null;
 let selectedCategory = 'All';
-let animationFrame;
-let mouseX = 0;
-let mouseY = 0;
+
+// Matrix Background Setup
+const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+const fontSize = 10;
+let drops = [];
+
+function draw() {
+    if (!context) return;
+    context.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    context.fillRect(0, 0, width, height);
+    
+    context.fillStyle = '#0F0';
+    context.font = fontSize + 'px monospace';
+    
+    for (let i = 0; i < drops.length; i++) {
+        const text = characters.charAt(Math.floor(Math.random() * characters.length));
+        context.fillText(text, i * fontSize, drops[i] * fontSize);
+        
+        if (drops[i] * fontSize > height && Math.random() > 0.975) {
+            drops[i] = 0;
+        }
+        drops[i]++;
+    }
+}
+
+function initMatrix() {
+    if (!canvas) return;
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    drops = [];
+    for (let i = 0; i < width / fontSize; i++) {
+        drops[i] = 1;
+    }
+}
 
 // Data
 const categories = [
@@ -20,7 +55,9 @@ const categories = [
     { name: 'Web Development', color: '#ff6b00', icon: '⚡' },
     { name: 'Full Stack Development', color: '#00ff80', icon: '🔄' },
     { name: 'Programming', color: '#00bfff', icon: '💻' },
-    { name: 'AI & ML', color: '#8a2be2', icon: '🤖' }
+    { name: 'Tools & Frameworks', color: '#ff8c00', icon: '🛠️' },
+    { name: 'AI & ML', color: '#8a2be2', icon: '🤖' },
+    { name: 'Cloud & Infrastructure', color: '#00ff80', icon: '☁️' }
 ];
 
 const skills = [
@@ -30,6 +67,11 @@ const skills = [
     { name: 'Binary Exploitation', level: 85, category: 'Offensive Security', icon: '⚡', description: 'Buffer overflows, ROP chains, heap exploitation' },
     { name: 'Reverse Engineering', level: 88, category: 'Offensive Security', icon: '🔧', description: 'Static and dynamic analysis, binary reversing' },
     { name: 'Cryptography', level: 87, category: 'Offensive Security', icon: '🔐', description: 'Crypto attacks, hash cracking, cipher analysis' },
+    { name: 'Forensics', level: 83, category: 'Offensive Security', icon: '🔍', description: 'Digital forensics and incident response' },
+    { name: 'OSINT', level: 90, category: 'Offensive Security', icon: '🕵️', description: 'Open-source intelligence gathering and analysis' },
+    { name: 'Network Security', level: 89, category: 'Offensive Security', icon: '🌐', description: 'Network analysis, monitoring, and defense' },
+    { name: 'Privilege Escalation', level: 86, category: 'Offensive Security', icon: '⬆️', description: 'Linux/Windows privilege escalation techniques' },
+    { name: 'Social Engineering', level: 80, category: 'Offensive Security', icon: '🎭', description: 'Phishing, pretexting, and human-based attacks' },
     
     // Web Development
     { name: 'Angular', level: 85, category: 'Web Development', icon: '🅰️', description: 'Component-based architecture, RxJS, NgRx' },
@@ -37,6 +79,7 @@ const skills = [
     { name: 'JavaScript', level: 92, category: 'Web Development', icon: '📜', description: 'ES6+, Asynchronous programming, DOM manipulation' },
     { name: 'Svelte', level: 90, category: 'Web Development', icon: '🔥', description: 'Reactive components, state management, transitions' },
     { name: 'TailwindCSS', level: 94, category: 'Web Development', icon: '🌊', description: 'Utility-first CSS, custom design systems' },
+    { name: 'ASP.NET', level: 82, category: 'Web Development', icon: '🌐', description: 'Web application development' },
 
     // Full Stack Development
     { name: 'Next.js', level: 88, category: 'Full Stack Development', icon: '▲', description: 'SSR, ISR, API Routes, Middleware' },
@@ -48,12 +91,43 @@ const skills = [
 
     // Programming
     { name: 'Python', level: 95, category: 'Programming', icon: '🐍', description: 'Automation, scripting, exploit development' },
-    { name: 'Go', level: 75, category: 'Programming', icon: '🚀', description: 'Concurrent systems, CLI tools' },
-    { name: 'Bash/Shell', level: 92, category: 'Programming', icon: '💻', description: 'System automation, pipeline scripting' },
+    { name: 'Bash/Shell', level: 92, category: 'Programming', icon: '💻', description: 'Shell scripting and automation' },
+    { name: 'C/C++', level: 78, category: 'Programming', icon: '⚙️', description: 'System programming and exploit development' },
+    { name: 'SQL', level: 88, category: 'Programming', icon: '🗄️', description: 'Database querying and SQL injection' },
+    { name: 'Go', level: 75, category: 'Programming', icon: '🚀', description: 'Concurrent programming and tooling' },
     
+    // Tools & Frameworks
+    { name: 'Burp Suite', level: 93, category: 'Tools & Frameworks', icon: '🔥', description: 'Web application security testing' },
+    { name: 'Metasploit', level: 90, category: 'Tools & Frameworks', icon: '💣', description: 'Exploitation framework and post-exploitation' },
+    { name: 'Nmap', level: 94, category: 'Tools & Frameworks', icon: '📡', description: 'Network scanning and reconnaissance' },
+    { name: 'Wireshark', level: 91, category: 'Tools & Frameworks', icon: '🦈', description: 'Network protocol analysis' },
+    { name: 'Ghidra', level: 85, category: 'Tools & Frameworks', icon: '👾', description: 'Reverse engineering and disassembly' },
+    { name: 'Radare2', level: 82, category: 'Tools & Frameworks', icon: '🔬', description: 'Binary analysis framework' },
+    { name: 'IDA Pro', level: 80, category: 'Tools & Frameworks', icon: '🔭', description: 'Interactive disassembler' },
+    { name: 'John/Hashcat', level: 88, category: 'Tools & Frameworks', icon: '🔓', description: 'Password cracking and hash analysis' },
+    { name: 'pwntools', level: 87, category: 'Tools & Frameworks', icon: '🛠️', description: 'CTF framework and exploit development' },
+    { name: 'SQLmap', level: 89, category: 'Tools & Frameworks', icon: '💉', description: 'Automated SQL injection tool' },
+    { name: 'Docker', level: 86, category: 'Tools & Frameworks', icon: '🐳', description: 'Containerization and deployment' },
+    { name: 'Git', level: 90, category: 'Tools & Frameworks', icon: '📦', description: 'Version control and collaboration' },
+
     // AI & ML
-    { name: 'Machine Learning', level: 85, category: 'AI & ML', icon: '🧠', description: 'Algorithm implementation, model training' },
-    { name: 'TensorFlow', level: 78, category: 'AI & ML', icon: '🔷', description: 'Deep learning models, neural networks' }
+    { name: 'Machine Learning', level: 85, category: 'AI & ML', icon: '🧠', description: 'ML algorithms and model training' },
+    { name: 'Neural Networks', level: 82, category: 'AI & ML', icon: '🕸️', description: 'Deep learning and neural architectures' },
+    { name: 'Anomaly Detection', level: 88, category: 'AI & ML', icon: '🔍', description: 'ML-based threat detection' },
+    { name: 'AI Security', level: 83, category: 'AI & ML', icon: '🛡️', description: 'Securing AI systems and adversarial ML' },
+    { name: 'Data Analysis', level: 87, category: 'AI & ML', icon: '📊', description: 'Data processing and statistical analysis' },
+    { name: 'Scikit-learn', level: 84, category: 'AI & ML', icon: '📈', description: 'ML library for Python' },
+    { name: 'TensorFlow', level: 78, category: 'AI & ML', icon: '🔷', description: 'Deep learning framework' },
+    { name: 'Pandas/NumPy', level: 86, category: 'AI & ML', icon: '🐼', description: 'Data manipulation libraries' },
+    
+    // Cloud & Infrastructure
+    { name: 'AWS', level: 85, category: 'Cloud & Infrastructure', icon: '☁️', description: 'Amazon Web Services infrastructure' },
+    { name: 'Linux Administration', level: 93, category: 'Cloud & Infrastructure', icon: '🐧', description: 'Linux system administration and hardening' },
+    { name: 'Kali Linux', level: 95, category: 'Cloud & Infrastructure', icon: '🐉', description: 'Penetration testing distribution' },
+    { name: 'Active Directory', level: 80, category: 'Cloud & Infrastructure', icon: '🏢', description: 'AD enumeration and exploitation' },
+    { name: 'Cloud Security', level: 82, category: 'Cloud & Infrastructure', icon: '🔒', description: 'Cloud security best practices' },
+    { name: 'GCP', level: 78, category: 'Cloud & Infrastructure', icon: '☁️', description: 'Google Cloud Platform' },
+    { name: 'CI/CD', level: 81, category: 'Cloud & Infrastructure', icon: '🔄', description: 'Continuous integration and deployment' }
 ];
 
 $: filteredSkills = selectedCategory === 'All' 
@@ -66,100 +140,24 @@ $: skillStats = {
     avgLevel: Math.round(skills.reduce((acc, s) => acc + s.level, 0) / skills.length)
 };
 
-// --- Particle System (Restored) ---
-class Particle {
-    constructor(x, y, color) {
-        this.x = x;
-        this.y = y;
-        this.vx = (Math.random() - 0.5) * 2;
-        this.vy = (Math.random() - 0.5) * 2;
-        this.life = 1;
-        this.decay = Math.random() * 0.02 + 0.01;
-        this.size = Math.random() * 3 + 1;
-        this.color = color;
-        this.alpha = 1;
-    }
-
-    update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.life -= this.decay;
-        this.alpha = this.life;
-        this.vx *= 0.98;
-        this.vy *= 0.98;
-    }
-
-    draw(ctx) {
-        ctx.save();
-        ctx.globalAlpha = this.alpha * 0.8;
-        ctx.fillStyle = this.color;
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-    }
-}
-
-function createParticles(x, y, count, color) {
-    if (!ctx) return;
-    for (let i = 0; i < count; i++) {
-        particles.push(new Particle(x, y, color));
-    }
-}
-
-function animateParticles() {
-    if (!ctx) return;
-    
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Ambient particles
-    if (Math.random() < 0.08) {
-        const colors = ['#00ff00', '#ff0080', '#00bfff', '#ff8c00', '#8a2be2'];
-        createParticles(
-            Math.random() * canvas.width,
-            Math.random() * canvas.height,
-            1,
-            colors[Math.floor(Math.random() * colors.length)]
-        );
-    }
-    
-    particles = particles.filter(particle => {
-        particle.update();
-        if (particle.life > 0) {
-            particle.draw(ctx);
-            return true;
-        }
-        return false;
-    });
-    
-    animationFrame = requestAnimationFrame(animateParticles);
-}
-
 onMount(() => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    ctx = canvas.getContext('2d');
+    context = canvas.getContext('2d');
+    initMatrix();
+    matrix = setInterval(draw, 35);
     
     setTimeout(() => visible = true, 300);
-    requestAnimationFrame(animateParticles);
     
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
+    const resizeHandler = () => initMatrix();
+    window.addEventListener('resize', resizeHandler);
 
     return () => {
-        if (animationFrame) {
-            cancelAnimationFrame(animationFrame);
-        }
+        clearInterval(matrix);
+        window.removeEventListener('resize', resizeHandler);
     };
 });
 </script>
 
-<canvas bind:this={canvas} class="particle-canvas"></canvas>
-<div class="background-overlay"></div>
+<canvas bind:this={canvas} class="matrix-canvas"></canvas>
 
 {#if visible}
 <main in:fade={{ duration: 1000 }} class="main-container">
@@ -171,19 +169,19 @@ onMount(() => {
             SKILLS_MATRIX
             <span class="code-bracket">{'/>'}</span>
         </h1>
-        <p class="subtitle">Architecting solutions with modern technologies</p>
+        <p class="subtitle">Comprehensive Technical Arsenal</p>
     </section>
 
     <!-- Stats Bar -->
     <section class="stats-bar glass-panel" in:fly={{ y: 20, duration: 600, delay: 200, easing: cubicOut }}>
         <div class="stat-item">
             <div class="stat-value">{skillStats.total}</div>
-            <div class="stat-label">Competencies</div>
+            <div class="stat-label">Total Skills</div>
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
             <div class="stat-value">{skillStats.categories}</div>
-            <div class="stat-label">Domains</div>
+            <div class="stat-label">Categories</div>
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
@@ -217,11 +215,7 @@ onMount(() => {
                 class:hovered={hoveredSkill === skill}
                 style="--accent-color: {categories.find(c => c.name === skill.category)?.color || '#fff'}"
                 in:scale={{ duration: 300, delay: i * 30, easing: cubicOut }}
-                on:mouseenter={(e) => {
-                    hoveredSkill = skill;
-                    const rect = e.target.getBoundingClientRect();
-                    createParticles(rect.left + rect.width/2, rect.top + rect.height/2, 8, categories.find(c => c.name === skill.category)?.color);
-                }}
+                on:mouseenter={() => hoveredSkill = skill}
                 on:mouseleave={() => hoveredSkill = null}
             >
                 <div class="card-header">
@@ -254,12 +248,12 @@ onMount(() => {
 
 <style>
 :global(body) {
-    background: #080808;
+    background: #000;
     color: #fff;
     overflow-x: hidden;
 }
 
-.particle-canvas {
+.matrix-canvas {
     position: fixed;
     top: 0;
     left: 0;
@@ -267,17 +261,7 @@ onMount(() => {
     height: 100vh;
     pointer-events: none;
     z-index: 0;
-}
-
-.background-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 50% 50%, rgba(20, 20, 30, 0), rgba(0, 0, 0, 0.8));
-    pointer-events: none;
-    z-index: 0;
+    opacity: 0.3;
 }
 
 .main-container {
@@ -290,11 +274,11 @@ onMount(() => {
 
 /* Glassmorphism Helper */
 .glass-panel {
-    background: rgba(20, 20, 20, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(12px);
+    background: rgba(10, 10, 10, 0.7);
+    border: 1px solid rgba(0, 255, 0, 0.15);
+    backdrop-filter: blur(10px);
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* Typography */
@@ -309,17 +293,17 @@ onMount(() => {
     font-weight: 700;
     letter-spacing: -1px;
     margin-bottom: 0.5rem;
-    color: #fff;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    color: #00ff00;
+    text-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
 }
 
 .code-bracket {
-    color: #00ff00; /* Hacker green accent */
+    color: #00bfff; 
     font-weight: 300;
 }
 
 .subtitle {
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(255, 255, 255, 0.7);
     font-size: 1.1rem;
     font-weight: 300;
 }
@@ -340,24 +324,25 @@ onMount(() => {
 }
 
 .stat-value {
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: 800;
     font-family: 'Courier New', monospace;
     color: #00ff00;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
 }
 
 .stat-label {
     font-size: 0.8rem;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.6);
     letter-spacing: 1px;
-    margin-top: 0.2rem;
+    margin-top: 0.3rem;
 }
 
 .stat-divider {
     width: 1px;
     height: 40px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 255, 0, 0.2);
 }
 
 /* Filters */
@@ -376,21 +361,22 @@ onMount(() => {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.6rem 1.2rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.7rem 1.4rem;
+    background: rgba(0, 10, 0, 0.6);
+    border: 1px solid rgba(0, 255, 0, 0.2);
     border-radius: 50px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.8);
     font-size: 0.9rem;
     cursor: pointer;
+    font-family: 'Courier New', monospace;
     transition: all 0.2s ease;
 }
 
 .filter-chip:hover, .filter-chip.active {
-    background: rgba(var(--chip-color), 0.1);
-    border-color: var(--chip-color);
-    color: #fff;
-    box-shadow: 0 0 15px var(--chip-color);
+    background: rgba(0, 255, 0, 0.15);
+    border-color: #00ff00;
+    color: #00ff00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
 }
 
 .chip-icon {
@@ -415,7 +401,7 @@ onMount(() => {
 .skill-card:hover {
     transform: translateY(-5px);
     border-color: var(--accent-color);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.02);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
 }
 
 .card-header {
@@ -433,53 +419,60 @@ onMount(() => {
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .skill-icon {
     font-size: 1.8rem;
+    filter: drop-shadow(0 0 5px var(--accent-color));
 }
 
 .skill-level {
     font-family: 'Courier New', monospace;
     font-weight: 700;
     color: var(--accent-color);
-    font-size: 1rem;
+    font-size: 1.1rem;
+    text-shadow: 0 0 10px var(--accent-color);
 }
 
 .card-body h3 {
     margin: 0;
     font-size: 1.2rem;
-    font-weight: 600;
+    font-weight: 700;
+    color: #fff;
 }
 
 .skill-category {
     font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.5);
     margin: 0.2rem 0 1rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .progress-track {
-    height: 4px;
+    height: 6px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 2px;
+    border-radius: 3px;
     overflow: hidden;
 }
 
 .progress-bar {
     height: 100%;
-    border-radius: 2px;
+    border-radius: 3px;
     box-shadow: 0 0 10px var(--accent-color);
 }
 
 .card-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(10, 10, 10, 0.96);
+    background: rgba(5, 5, 5, 0.95);
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 1.5rem;
     text-align: center;
+    border: 1px solid var(--accent-color);
 }
 
 .description {
