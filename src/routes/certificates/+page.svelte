@@ -73,6 +73,32 @@ $: categories = ['All', ...uniqueCategories];
 
 const certificates = [
     {
+    id: 24,
+    title: "CEH Master",
+    link: "https://drive.google.com/file/d/1oD4RMNpCmY5mbfLewMfRDVGd5aO2ESst/view?usp=sharing",
+    organization: "EC-Council",
+    date: "Feb 2026",
+    category: "Ethical Hacking",
+    level: "Expert",
+    color: "#ff0080",
+    icon: "🏆",
+    description: "Master-level certification demonstrating mastery of ethical hacking skills by passing both CEH Knowledge and CEH Practical exams",
+    skills: ["Advanced Penetration Testing", "Ethical Hacking Mastery", "Security Assessment", "Enterprise Security"]
+    },
+    {
+    id: 25,
+    title: "CEH Practical",
+    link: "https://drive.google.com/file/d/1VE9Slecipsy94x-134ejt0S7aAPDTWOw/view?usp=sharing",
+    organization: "EC-Council",
+    date: "Feb 2026",
+    category: "Ethical Hacking",
+    level: "Expert",
+    color: "#ff0080",
+    icon: "💻",
+    description: "Hands-on practical exam demonstrating real-world ethical hacking skills in a proctored, performance-based environment",
+    skills: ["Hands-on Penetration Testing", "Network Exploitation", "Web Application Security", "Live Target Assessment"]
+    },
+    {
     id: 1,
     title: "Certified Ethical Hacker (CEH v13)",
     link: "https://drive.google.com/file/d/1Tg7jN-2iZs7oYH23CL4p6txL7QfJJcBl/view?usp=sharing",
