@@ -74,7 +74,7 @@ $: categories = ['All', ...uniqueCategories];
 const certificates = [
     {
     id: 24,
-    title: "CEH Master",
+    title: "Certified Ethical Hacker (Master)",
     link: "https://drive.google.com/file/d/1oD4RMNpCmY5mbfLewMfRDVGd5aO2ESst/view?usp=sharing",
     organization: "EC-Council",
     date: "Feb 2026",
@@ -87,7 +87,7 @@ const certificates = [
     },
     {
     id: 25,
-    title: "CEH Practical",
+    title: "Certified Ethical Hacker (Practical)",
     link: "https://drive.google.com/file/d/1VE9Slecipsy94x-134ejt0S7aAPDTWOw/view?usp=sharing",
     organization: "EC-Council",
     date: "Feb 2026",
