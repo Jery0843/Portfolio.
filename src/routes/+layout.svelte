@@ -104,6 +104,7 @@ onMount(async () => {
 </script>
 
 <svelte:head>
+    <meta name="yandex-verification" content="f845cb8aae27c0aa" />
     {@html `<script type="application/ld+json">${JSON.stringify(siteNavSchema)}<\/script>`}
 </svelte:head>
 
