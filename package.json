@@ -13,7 +13,7 @@
     "dependencies": {
         "@popmotion/popcorn": "^0.4.4",
         "@sveltejs/kit": "^2.50.2",
-        "@types/node": "^20.0.0",
+        "@types/node": "^20.19.33",
         "@types/styled-components": "^5.1.34",
         "autoprefixer": "^10.4.16",
         "framesync": "^6.1.2",
