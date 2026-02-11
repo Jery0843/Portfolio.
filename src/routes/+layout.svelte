@@ -1,5 +1,6 @@
 <script lang="ts">
 import '../app.css';
+import 'lenis/dist/lenis.css';
 import { fly } from 'svelte/transition';
 import { page } from '$app/state';
 import { onMount } from 'svelte';
