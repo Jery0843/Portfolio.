@@ -17,6 +17,7 @@
         "@types/styled-components": "^5.1.34",
         "autoprefixer": "^10.4.16",
         "framesync": "^6.1.2",
+        "lenis": "^1.3.17",
         "popmotion": "^11.0.5",
         "postcss": "^8.4.32",
         "react-router-dom": "^7.1.3",

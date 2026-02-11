@@ -12,8 +12,12 @@ const pages = [
     '/contact'
 ];
 
+const externalPages = [
+    'https://0xjerry.jerome.co.in'
+];
+
 export async function GET() {
-    const body = sitemap(pages);
+    const body = sitemap(pages, externalPages);
     const headers = {
         'Cache-Control': 'max-age=0, s-maxage=3600',
         'Content-Type': 'application/xml'
@@ -21,7 +25,7 @@ export async function GET() {
     return new Response(body, { headers });
 }
 
-const sitemap = (pages: string[]) => `<?xml version="1.0" encoding="UTF-8" ?>
+const sitemap = (pages: string[], external: string[]) => `<?xml version="1.0" encoding="UTF-8" ?>
 <urlset
     xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
     xmlns:xhtml="https://www.w3.org/1999/xhtml"
@@ -31,8 +35,8 @@ const sitemap = (pages: string[]) => `<?xml version="1.0" encoding="UTF-8" ?>
     xmlns:video="https://www.google.com/schemas/sitemap-video/1.1"
 >
 ${pages
-    .map(
-        (page) => `
+        .map(
+            (page) => `
     <url>
         <loc>${site}${page}</loc>
         <changefreq>${page === '' ? 'daily' : 'weekly'}</changefreq>
@@ -40,6 +44,17 @@ ${pages
         <lastmod>${new Date().toISOString()}</lastmod>
     </url>
 `
-    )
-    .join('')}
+        )
+        .join('')}${external
+            .map(
+                (url) => `
+    <url>
+        <loc>${url}</loc>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+        <lastmod>${new Date().toISOString()}</lastmod>
+    </url>
+`
+            )
+            .join('')}
 </urlset>`;
