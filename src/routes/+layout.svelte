@@ -48,10 +48,15 @@ let footerEl: HTMLElement = $state();
 let footerTime = $state(new Date());
 let launching = $state(false);
 let footerProgress = $state(0);
+let lenisInstance: any = null;
 
 function scrollTop() {
     launching = true;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (lenisInstance) {
+        lenisInstance.scrollTo(0, { duration: 1.5 });
+    } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     setTimeout(() => (launching = false), 900);
 }
 
@@ -64,7 +69,22 @@ function onFooterMouseMove(e: MouseEvent) {
     footerEl.style.setProperty('--fy', `${y}px`);
 }
 
-onMount(() => {
+onMount(async () => {
+    // Dynamically import Lenis (browser-only)
+    const { default: Lenis } = await import('lenis');
+    
+    lenisInstance = new Lenis({
+        lerp: 0.075,
+        smoothWheel: true,
+        touchMultiplier: 2
+    });
+
+    function raf(time: number) {
+        lenisInstance.raf(time);
+        requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
     const t = setInterval(() => (footerTime = new Date()), 60000);
     const onScroll = () => {
         const doc = document.documentElement;
@@ -74,7 +94,12 @@ onMount(() => {
     };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
-    return () => { clearInterval(t); window.removeEventListener('scroll', onScroll as any); };
+    return () => {
+        clearInterval(t);
+        window.removeEventListener('scroll', onScroll as any);
+        lenisInstance?.destroy();
+        lenisInstance = null;
+    };
 });
 </script>
 
