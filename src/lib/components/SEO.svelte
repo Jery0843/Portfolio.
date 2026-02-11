@@ -1,17 +1,65 @@
 <script lang="ts">
-    export let title: string = 'Jerome Andrew K - Cybersecurity Expert & Ethical Hacker';
-    export let description: string = 'Jerome Andrew K - Cybersecurity Expert & Ethical Hacker. Specializing in encryption, AI security, penetration testing, and malware analysis. Explore projects, research, and experience.';
-    export let keywords: string = 'cybersecurity, ethical hacking, penetration testing, security researcher, full-stack developer, Jerome Andrew K, infosec, vulnerability assessment, network security, malware analysis';
-    export let canonical: string = '';
-    export let ogImage: string = 'https://jerome.is-a.dev/logo.jpeg';
-    export let ogType: string = 'website';
-    export let twitterCard: string = 'summary_large_image';
-    export let twitterCreator: string = '@0xJerry__';
-    export let author: string = 'Jerome Andrew K';
-    export let noindex: boolean = false;
+    interface Props {
+        title?: string;
+        description?: string;
+        keywords?: string;
+        canonical?: string;
+        ogImage?: string;
+        ogType?: string;
+        twitterCard?: string;
+        twitterCreator?: string;
+        author?: string;
+        noindex?: boolean;
+        datePublished?: string;
+        dateModified?: string;
+        speakable?: boolean;
+    }
+
+    let {
+        title = 'Jerome Andrew K - Cybersecurity Expert & Ethical Hacker',
+        description = 'Jerome Andrew K - Cybersecurity Expert & Ethical Hacker. Specializing in encryption, AI security, penetration testing, and malware analysis. Explore projects, research, and experience.',
+        keywords = 'cybersecurity, ethical hacking, penetration testing, security researcher, full-stack developer, Jerome Andrew K, infosec, vulnerability assessment, network security, malware analysis',
+        canonical = '',
+        ogImage = 'https://jerome.co.in/logo.jpeg',
+        ogType = 'website',
+        twitterCard = 'summary_large_image',
+        twitterCreator = '@0xJerry__',
+        author = 'Jerome Andrew K',
+        noindex = false,
+        datePublished = '',
+        dateModified = '',
+        speakable = false
+    }: Props = $props();
     
-    const baseUrl = 'https://jerome.is-a.dev';
-    const fullCanonical = canonical || baseUrl;
+    const baseUrl = 'https://jerome.co.in';
+    let fullCanonical = $derived(canonical || baseUrl);
+
+    // WebPage schema with speakable and date metadata
+    let webPageSchema = $derived({
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": title,
+        "description": description,
+        "url": fullCanonical,
+        "inLanguage": "en-US",
+        "isPartOf": {
+            "@type": "WebSite",
+            "name": "Jerome Andrew K Portfolio",
+            "url": baseUrl
+        },
+        "author": {
+            "@type": "Person",
+            "name": author
+        },
+        ...(datePublished ? { "datePublished": datePublished } : {}),
+        ...(dateModified ? { "dateModified": dateModified } : {}),
+        ...(speakable ? {
+            "speakable": {
+                "@type": "SpeakableSpecification",
+                "cssSelector": ["h1", ".hero-title", ".cyber-title", ".section-title"]
+            }
+        } : {})
+    });
 </script>
 
 <svelte:head>
@@ -68,4 +116,15 @@
     
     <!-- Rating -->
     <meta name="rating" content="general" />
+    
+    <!-- Date Metadata -->
+    {#if datePublished}
+        <meta property="article:published_time" content={datePublished} />
+    {/if}
+    {#if dateModified}
+        <meta property="article:modified_time" content={dateModified} />
+    {/if}
+    
+    <!-- WebPage Structured Data -->
+    {@html `<script type="application/ld+json">${JSON.stringify(webPageSchema)}<\/script>`}
 </svelte:head>

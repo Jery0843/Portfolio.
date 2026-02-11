@@ -1,7 +1,11 @@
-<script>
-export let icon = 'github'; // github, linkedin, x, email, discord, location, rocket, trophy, blog, mail, lightning, search
-export let size = '18px';
-export let color = 'currentColor';
+<script lang="ts">
+    interface Props {
+        icon?: string; // github, linkedin, x, email, discord, location, rocket, trophy, blog, mail, lightning, search
+        size?: string;
+        color?: string;
+    }
+
+    let { icon = 'github', size = '18px', color = 'currentColor' }: Props = $props();
 </script>
 
 <div class="animated-icon-wrapper" style="--icon-size: {size}; --icon-color: {color};">

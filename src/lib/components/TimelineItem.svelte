@@ -1,7 +1,11 @@
 <script lang="ts">
 import type { TimelineEvent } from '$lib/data/portfolio-data';
 
-export let event: TimelineEvent;
+    interface Props {
+        event: TimelineEvent;
+    }
+
+    let { event }: Props = $props();
 </script>
 
 <div class="timeline-item mb-12">

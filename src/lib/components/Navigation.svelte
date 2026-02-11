@@ -4,23 +4,27 @@ import { onMount } from 'svelte';
 import { afterNavigate } from '$app/navigation';
 import { slide, fade } from 'svelte/transition';
 
-export let navItems: Array<{
+    interface Props {
+        navItems: Array<{
     href: string;
     label: string;
     icon?: string;
 }>;
+    }
 
-let isMenuOpen = false;
-let isMobile = false;
-let canvas;
+    let { navItems }: Props = $props();
+
+let isMenuOpen = $state(false);
+let isMobile = $state(false);
+let canvas = $state();
 let ctx;
 let particles = [];
 let animationFrame;
-let scrollProgress = 0;
-let isScrolled = false;
-let hidden = false;
+let scrollProgress = $state(0);
+let isScrolled = $state(false);
+let hidden = $state(false);
 let lastScrollY = 0;
-let navInnerEl: HTMLElement;
+let navInnerEl: HTMLElement = $state();
 let mounted = false;
 
 class Particle {
@@ -217,15 +221,15 @@ onMount(() => {
 
 <nav class="nav-shell fixed top-0 left-0 w-full z-[9998]" class:scrolled={isScrolled} class:hidden={hidden}>
     <div class="scroll-progress" style="--progress: {scrollProgress}%"></div>
-    <div class="nav-fab" bind:this={navInnerEl} on:mousemove={onNavMouseMove} role="region" aria-label="Primary navigation">
+    <div class="nav-fab" bind:this={navInnerEl} onmousemove={onNavMouseMove} role="region" aria-label="Primary navigation">
         <div class="aurora"></div>
         <div class="arc-nav">
             {#each navItems as item, i}
                 <a 
                     href={item.href}
                     class="arc-link {$page.url.pathname === item.href ? 'active' : ''}"
-                    on:mouseenter={handleNavHover}
-                    on:click={() => handleNavClick(item.href)}
+                    onmouseenter={handleNavHover}
+                    onclick={() => handleNavClick(item.href)}
                 >
                     {item.label}
                 </a>
@@ -237,7 +241,7 @@ onMount(() => {
         <button 
             class="mobile-menu-btn"
             class:visible={isMobile}
-            on:click={toggleMenu}
+            onclick={toggleMenu}
             aria-label="Toggle menu"
             aria-expanded={isMenuOpen}
             type="button"
@@ -257,8 +261,8 @@ onMount(() => {
 <div 
     class="mobile-menu-backdrop"
     class:open={isMenuOpen}
-    on:click={() => isMenuOpen = false}
-    on:keydown={(e) => { if (e.key === 'Escape') isMenuOpen = false; }}
+    onclick={() => isMenuOpen = false}
+    onkeydown={(e) => { if (e.key === 'Escape') isMenuOpen = false; }}
     role="button"
     tabindex="-1"
     aria-label="Close menu"
@@ -277,7 +281,7 @@ onMount(() => {
             <a 
                 href={item.href}
                 class="mobile-menu-link {$page.url.pathname === item.href ? 'active' : ''}"
-                on:click={() => handleNavClick(item.href)}
+                onclick={() => handleNavClick(item.href)}
                 role="menuitem"
             >
                 {item.label}

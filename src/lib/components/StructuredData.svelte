@@ -1,14 +1,18 @@
 <script lang="ts">
-    export let type: 'person' | 'website' | 'organization' = 'person';
+    interface Props {
+        type?: 'person' | 'website' | 'organization';
+    }
+
+    let { type = 'person' }: Props = $props();
     
-    const baseUrl = 'https://jerome.is-a.dev';
+    const baseUrl = 'https://jerome.co.in';
     
     const personData = {
         "@context": "https://schema.org",
         "@type": "Person",
         "name": "Jerome Andrew K",
         "url": baseUrl,
-        "image": "https://jerome.is-a.dev/logo.jpeg",
+        "image": "https://jerome.co.in/logo.jpeg",
         "jobTitle": "Cybersecurity Expert & Ethical Hacker",
         "description": "Cybersecurity Expert & Ethical Hacker specializing in encryption, AI security, penetration testing, and malware analysis.",
         "knowsAbout": [
@@ -63,7 +67,7 @@
         "@type": "Organization",
         "name": "Jerome Andrew K",
         "url": baseUrl,
-        "logo": "https://jerome.is-a.dev/logo.jpeg",
+        "logo": "https://jerome.co.in/logo.jpeg",
         "description": "Cybersecurity consulting and penetration testing services",
         "founder": {
             "@type": "Person",

@@ -3,12 +3,14 @@ import { onMount } from 'svelte';
 import { fade, fly, scale } from 'svelte/transition';
 import { cubicOut, elasticOut } from 'svelte/easing';
 import AnimatedIcon from '$lib/components/AnimatedIcons.svelte';
+import SEO from '$lib/components/SEO.svelte';
+import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 
-let canvas;
+let canvas = $state();
 let ctx;
-let showContent = false;
-let selectedEdu = null;
-let hoveredEdu = null;
+let showContent = $state(false);
+let selectedEdu = $state(null);
+let hoveredEdu = $state(null);
 let particles = [];
 let animationFrame;
 let mouseX = 0;
@@ -219,7 +221,7 @@ onMount(() => {
 });
 
 // Dynamic stats calculations
-$: educationStats = {
+let educationStats = $derived({
     qualifications: educations.length,
     subjects: educations.reduce((total, edu) => total + edu.subjects.length, 0),
     // Calculate approximate years of study from durations
@@ -234,8 +236,20 @@ $: educationStats = {
         }
         return total + 1;
     }, 0)
-};
+});
 </script>
+
+<!-- SEO Meta Tags -->
+<SEO 
+    title="Education & Academic Journey - Jerome Andrew K"
+    description="Academic background and qualifications of Jerome Andrew K including MSc Computer Science, BSc Computer Science, and CEH certification."
+    keywords="education, academic, MSc Computer Science, Loyola College, Jerome Andrew K, cybersecurity education"
+    canonical="https://jerome.co.in/education"
+    datePublished="2024-01-01"
+    dateModified="2026-02-11"
+    speakable={true}
+/>
+<BreadcrumbSchema pageName="Education" pageUrl="/education" />
 
 <!-- Particle Canvas -->
 <canvas bind:this={canvas} class="particle-canvas"></canvas>
@@ -267,8 +281,8 @@ $: educationStats = {
                     class:hovered={hoveredEdu === edu}
                     style="--edu-color: {edu.color}; --delay: {i * 0.15}s;"
                     in:scale={{ duration: 600, delay: 400 + i * 150, easing: elasticOut }}
-                    on:click={() => selectedEdu = selectedEdu === edu ? null : edu}
-                    on:mouseenter={(e) => {
+                    onclick={() => selectedEdu = selectedEdu === edu ? null : edu}
+                    onmouseenter={(e) => {
                         hoveredEdu = edu;
                         createParticles(
                             e.target.getBoundingClientRect().left + 150,
@@ -277,7 +291,7 @@ $: educationStats = {
                             edu.color
                         );
                     }}
-                    on:mouseleave={() => hoveredEdu = null}
+                    onmouseleave={() => hoveredEdu = null}
                     role="button"
                     tabindex="0"
                 >

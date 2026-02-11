@@ -2,15 +2,17 @@
 import { onMount } from 'svelte';
 import { fade, fly, scale } from 'svelte/transition';
 import { cubicOut, elasticOut } from 'svelte/easing';
+import SEO from '$lib/components/SEO.svelte';
+import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 
-let visible = false;
-let canvas;
+let visible = $state(false);
+let canvas = $state();
 let context;
 let width;
 let height;
 let matrix;
-let hoveredSkill = null;
-let selectedCategory = 'All';
+let hoveredSkill = $state(null);
+let selectedCategory = $state('All');
 
 // Matrix Background Setup
 const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
@@ -130,15 +132,15 @@ const skills = [
     { name: 'CI/CD', level: 81, category: 'Cloud & Infrastructure', icon: '🔄', description: 'Continuous integration and deployment' }
 ];
 
-$: filteredSkills = selectedCategory === 'All' 
+let filteredSkills = $derived(selectedCategory === 'All' 
     ? skills 
-    : skills.filter(skill => skill.category === selectedCategory);
+    : skills.filter(skill => skill.category === selectedCategory));
 
-$: skillStats = {
+let skillStats = $derived({
     total: skills.length,
     categories: categories.length - 1,
     avgLevel: Math.round(skills.reduce((acc, s) => acc + s.level, 0) / skills.length)
-};
+});
 
 onMount(() => {
     context = canvas.getContext('2d');
@@ -156,6 +158,18 @@ onMount(() => {
     };
 });
 </script>
+
+<!-- SEO Meta Tags -->
+<SEO 
+    title="Technical Skills Matrix - Jerome Andrew K"
+    description="Comprehensive technical skills of Jerome Andrew K including offensive security, web development, AI/ML, and cloud infrastructure."
+    keywords="skills, technical skills, penetration testing, web development, Python, cybersecurity, Jerome Andrew K"
+    canonical="https://jerome.co.in/skills"
+    datePublished="2024-01-01"
+    dateModified="2026-02-11"
+    speakable={true}
+/>
+<BreadcrumbSchema pageName="Skills" pageUrl="/skills" />
 
 <canvas bind:this={canvas} class="matrix-canvas"></canvas>
 
@@ -198,7 +212,7 @@ onMount(() => {
                     class="filter-chip"
                     class:active={selectedCategory === category.name}
                     style="--chip-color: {category.color}"
-                    on:click={() => selectedCategory = category.name}
+                    onclick={() => selectedCategory = category.name}
                 >
                     <span class="chip-icon">{category.icon}</span>
                     {category.name}
@@ -215,8 +229,8 @@ onMount(() => {
                 class:hovered={hoveredSkill === skill}
                 style="--accent-color: {categories.find(c => c.name === skill.category)?.color || '#fff'}"
                 in:scale={{ duration: 300, delay: i * 30, easing: cubicOut }}
-                on:mouseenter={() => hoveredSkill = skill}
-                on:mouseleave={() => hoveredSkill = null}
+                onmouseenter={() => hoveredSkill = skill}
+                onmouseleave={() => hoveredSkill = null}
             >
                 <div class="card-header">
                     <div class="icon-box">

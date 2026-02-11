@@ -1,20 +1,26 @@
 <script>
+  import { createBubbler, stopPropagation } from 'svelte/legacy';
+
+  const bubble = createBubbler();
 import { onMount } from 'svelte';
 import { fade, fly, scale } from 'svelte/transition';
 import { cubicOut, elasticOut } from 'svelte/easing';
 import SEO from '$lib/components/SEO.svelte';
+import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
+import ItemListSchema from '$lib/components/ItemListSchema.svelte';
+import SoftwareAppSchema from '$lib/components/SoftwareAppSchema.svelte';
 
-let canvas;
+let canvas = $state();
 let ctx;
-let showContent = false;
-let selectedProject = null;
+let showContent = $state(false);
+let selectedProject = $state(null);
 let hoveredProject = null;
 let particles = [];
 let animationFrame;
 let mouseX = 0;
 let mouseY = 0;
-let filterType = 'all';
-let primaryView = 'projects';
+let filterType = $state('all');
+let primaryView = $state('projects');
 
 const projects = [
        {
@@ -606,13 +612,13 @@ function handleKeydown(e) {
     }
 }
 
-$: baseProjects = primaryView === 'ctfs'
+let baseProjects = $derived(primaryView === 'ctfs'
     ? projects.filter(p => p.category === 'Capture The Flag')
-    : projects.filter(p => p.category !== 'Capture The Flag');
+    : projects.filter(p => p.category !== 'Capture The Flag'));
 
-$: visibleCategories = primaryView === 'ctfs'
+let visibleCategories = $derived(primaryView === 'ctfs'
     ? ['all', 'Capture The Flag']
-    : categories.filter(c => c !== 'Capture The Flag');
+    : categories.filter(c => c !== 'Capture The Flag'));
 
 // Function to parse project duration and get a sortable date
 function parseProjectDate(duration) {
@@ -650,10 +656,10 @@ function parseProjectDate(duration) {
     return new Date(0); // Fallback to epoch
 }
 
-$: filteredProjects = (filterType === 'all'
+let filteredProjects = $derived((filterType === 'all'
     ? baseProjects
     : baseProjects.filter(project => project.category === filterType)
-).sort((a, b) => parseProjectDate(b.duration) - parseProjectDate(a.duration));
+).sort((a, b) => parseProjectDate(b.duration) - parseProjectDate(a.duration)));
 
 // Dynamic stats helpers and sets
 function uniqueCount(arr) {
@@ -667,20 +673,20 @@ function pickTechnologies(list) {
 }
 
 // Sets respecting current filter selection
-$: projectsSet = projects.filter(p => p.category !== 'Capture The Flag' && (filterType === 'all' || p.category === filterType));
-$: ctfsSet = projects.filter(p => p.category === 'Capture The Flag' && (filterType === 'all' || p.category === filterType));
+let projectsSet = $derived(projects.filter(p => p.category !== 'Capture The Flag' && (filterType === 'all' || p.category === filterType)));
+let ctfsSet = $derived(projects.filter(p => p.category === 'Capture The Flag' && (filterType === 'all' || p.category === filterType)));
 
 // Stats per group
-$: statsProjects = {
+let statsProjects = $derived({
     items: projectsSet.length,
     categories: uniqueCount(pickCategories(projectsSet)),
     techs: uniqueCount(pickTechnologies(projectsSet))
-};
-$: statsCtfs = {
+});
+let statsCtfs = $derived({
     items: ctfsSet.length,
     categories: uniqueCount(pickCategories(ctfsSet)),
     techs: uniqueCount(pickTechnologies(ctfsSet))
-};
+});
 
 function openProject(project) {
     selectedProject = project;
@@ -718,8 +724,18 @@ onMount(() => {
     title="Projects - Jerome Andrew K | Cybersecurity Projects & CTF Challenges"
     description="Explore Jerome Andrew K's cybersecurity projects including SecureHive encryption tool, CTF challenges from HackTheBox & TryHackMe, machine learning research, and penetration testing work."
     keywords="cybersecurity projects, CTF writeups, HackTheBox, TryHackMe, SecureHive, ethical hacking projects, penetration testing projects, security tools"
-    canonical="https://jerome.is-a.dev/projects"
+    canonical="https://jerome.co.in/projects"
+    datePublished="2024-01-01"
+    dateModified="2026-02-11"
+    speakable={true}
 />
+<BreadcrumbSchema pageName="Projects" pageUrl="/projects" />
+<ItemListSchema projects={projects} />
+<SoftwareAppSchema apps={[
+    { name: 'SecureHive', url: 'https://securehive.securenotepad.tech/', description: 'Python-based file and folder encryption application with AES encryption, RSA key management, and cross-platform GUI.', category: 'SecurityApplication', operatingSystem: 'Windows, macOS, Linux' },
+    { name: 'TorForge', url: 'https://github.com/jery0843/torforge', description: 'Transparent Tor proxy with AI-powered circuit selection, post-quantum encryption, and steganography mode.', category: 'SecurityApplication', operatingSystem: 'Linux' },
+    { name: 'Kali Secure Notepad', url: 'https://securenotepad.tech/', description: 'Privacy-focused note-taking app with zero-knowledge encryption, tamper detection, and real-time security monitoring.', category: 'SecurityApplication', operatingSystem: 'Cross-platform' }
+]} />
 
 <!-- Particle Canvas -->
 <canvas bind:this={canvas} class="particle-canvas"></canvas>
@@ -748,14 +764,14 @@ onMount(() => {
             <button 
                 class="toggle-btn" 
                 class:active={primaryView === 'projects'}
-                on:click={() => { primaryView = 'projects'; filterType = 'all'; selectedProject = null; }}
+                onclick={() => { primaryView = 'projects'; filterType = 'all'; selectedProject = null; }}
             >
                 Projects
             </button>
             <button 
                 class="toggle-btn" 
                 class:active={primaryView === 'ctfs'}
-                on:click={() => { primaryView = 'ctfs'; filterType = 'all'; selectedProject = null; }}
+                onclick={() => { primaryView = 'ctfs'; filterType = 'all'; selectedProject = null; }}
             >
                 CTFs
             </button>
@@ -773,7 +789,7 @@ onMount(() => {
                         class:active={filterType === category}
                         style="--delay: {i * 0.1}s"
                         in:scale={{ duration: 200, delay: 200 + i * 80, easing: cubicOut }}
-                        on:click={() => filterType = category}
+                        onclick={() => filterType = category}
                     >
                         {category.toUpperCase().replace(' ', '_')}
                     </button>
@@ -788,7 +804,7 @@ onMount(() => {
                 class="sheet-modal" 
                 style="--project-color: {selectedProject.color};"
                 in:fade={{ duration: 200 }} 
-                on:click|stopPropagation
+                onclick={stopPropagation(bubble('click'))}
                 role="dialog"
                 aria-label="Project details"
             >
@@ -803,7 +819,7 @@ onMount(() => {
                             </a>
                         </div>
                     </div>
-                    <button class="close-btn" on:click|stopPropagation={closeProject}>✕</button>
+                    <button class="close-btn" onclick={stopPropagation(closeProject)}>✕</button>
                 </div>
 
                 <div class="sheet-body">
@@ -874,7 +890,7 @@ onMount(() => {
                     class:selected={selectedProject === project}
                     style="--project-color: {project.color}; --index: {i};"
                     in:scale={{ duration: 300, delay: 200 + i * 80, easing: cubicOut }}
-                    on:click={() => openProject(project)}
+                    onclick={() => openProject(project)}
                     role="button"
                     tabindex="0"
                 >

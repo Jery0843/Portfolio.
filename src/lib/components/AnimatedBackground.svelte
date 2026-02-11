@@ -1,7 +1,7 @@
 <script lang="ts">
 import { onMount } from 'svelte';
 
-let canvas: HTMLCanvasElement;
+let canvas: HTMLCanvasElement = $state();
 let ctx: CanvasRenderingContext2D;
 
 interface CodeRain {
@@ -73,5 +73,5 @@ onMount(() => {
 <canvas 
 bind:this={canvas} 
 class="fixed top-0 left-0 z-[-1] opacity-30" 
-/>
+></canvas>
 

@@ -3,12 +3,14 @@ import { onMount } from 'svelte';
 import { fade, fly, scale } from 'svelte/transition';
 import { cubicOut, elasticOut } from 'svelte/easing';
 import AnimatedIcon from '$lib/components/AnimatedIcons.svelte';
+import SEO from '$lib/components/SEO.svelte';
+import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 
-let canvas;
+let canvas = $state();
 let ctx;
-let showContent = false;
-let selectedExp = null;
-let hoveredExp = null;
+let showContent = $state(false);
+let selectedExp = $state(null);
+let hoveredExp = $state(null);
 let particles = [];
 let animationFrame;
 let mouseX = 0;
@@ -135,7 +137,7 @@ onMount(() => {
 });
 
 // Dynamic stats calculations
-$: experienceStats = {
+let experienceStats = $derived({
     companies: experiences.length,
     technologies: [...new Set(experiences.flatMap(exp => exp.skills))].length,
     // Calculate approximate months from experience durations
@@ -149,8 +151,20 @@ $: experienceStats = {
         }
         return total + 1;
     }, 0)
-};
+});
 </script>
+
+<!-- SEO Meta Tags -->
+<SEO 
+    title="Professional Experience - Jerome Andrew K"
+    description="Professional experience and internships of Jerome Andrew K in data analytics, web development, and cybersecurity."
+    keywords="experience, internship, data analytics, web development, Jerome Andrew K, professional journey"
+    canonical="https://jerome.co.in/experience"
+    datePublished="2024-01-01"
+    dateModified="2026-02-11"
+    speakable={true}
+/>
+<BreadcrumbSchema pageName="Experience" pageUrl="/experience" />
 
 <!-- Particle Canvas -->
 <canvas bind:this={canvas} class="particle-canvas"></canvas>
@@ -182,8 +196,8 @@ $: experienceStats = {
                     class:hovered={hoveredExp === exp}
                     style="--exp-color: {exp.color}; --delay: {i * 0.2}s;"
                     in:scale={{ duration: 600, delay: 400 + i * 200, easing: elasticOut }}
-                    on:click={() => selectedExp = selectedExp === exp ? null : exp}
-                    on:mouseenter={(e) => {
+                    onclick={() => selectedExp = selectedExp === exp ? null : exp}
+                    onmouseenter={(e) => {
                         hoveredExp = exp;
                         createParticles(
                             e.target.getBoundingClientRect().left + 200,
@@ -192,7 +206,7 @@ $: experienceStats = {
                             exp.color
                         );
                     }}
-                    on:mouseleave={() => hoveredExp = null}
+                    onmouseleave={() => hoveredExp = null}
                     role="button"
                     tabindex="0"
                 >

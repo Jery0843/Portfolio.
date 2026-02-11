@@ -1,18 +1,24 @@
 <script>
+  import { createBubbler, stopPropagation } from 'svelte/legacy';
+
+  const bubble = createBubbler();
 import { fly, fade, scale } from 'svelte/transition';
 import { cubicOut, elasticOut } from 'svelte/easing';
 import { onMount } from 'svelte';
+import SEO from '$lib/components/SEO.svelte';
+import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
+import CredentialSchema from '$lib/components/CredentialSchema.svelte';
 
-let canvas;
+let canvas = $state();
 let context;
 let width;
 let height;
 let matrix;
-let visible = false;
-let selectedCategory = 'All';
-let hoveredCert = null;
-let expandedCert = null;
-let searchTerm = '';
+let visible = $state(false);
+let selectedCategory = $state('All');
+let hoveredCert = $state(null);
+let expandedCert = $state(null);
+let searchTerm = $state('');
 
 // Matrix background setup
 const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
@@ -67,9 +73,6 @@ onMount(() => {
     };
 });
 
-// Categories for filtering - dynamically extracted from certificates
-$: uniqueCategories = [...new Set(certificates.map(cert => cert.category))];
-$: categories = ['All', ...uniqueCategories];
 
 const certificates = [
     {
@@ -239,8 +242,12 @@ function parseDate(dateString) {
     return new Date(year, monthNum - 1, 1);
 }
 
+
+// Categories for filtering - dynamically extracted from certificates
+let uniqueCategories = $derived([...new Set(certificates.map(cert => cert.category))]);
+let categories = $derived(['All', ...uniqueCategories]);
 // Filtering and search functions with date sorting
-$: filteredCertificates = certificates
+let filteredCertificates = $derived(certificates
     .filter(cert => {
         const matchesCategory = selectedCategory === 'All' || cert.category === selectedCategory;
         const matchesSearch = cert.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -253,14 +260,33 @@ $: filteredCertificates = certificates
         const dateA = parseDate(a.date);
         const dateB = parseDate(b.date);
         return dateB - dateA; // Descending order (latest first)
-    });
-
-$: certificateStats = {
+    }));
+let certificateStats = $derived({
     total: certificates.length,
     categories: uniqueCategories.length,
     thisYear: certificates.filter(cert => cert.date.includes(new Date().getFullYear().toString())).length
-};
+});
 </script>
+
+<!-- SEO Meta Tags -->
+<SEO 
+    title="Certificates & Certifications - Jerome Andrew K"
+    description="Professional certifications and achievements of Jerome Andrew K in cybersecurity, ethical hacking, AI, and web security."
+    keywords="certificates, certifications, cybersecurity, ethical hacking, CEH, Jerome Andrew K"
+    canonical="https://jerome.co.in/certificates"
+    datePublished="2024-01-01"
+    dateModified="2026-02-11"
+    speakable={true}
+/>
+<BreadcrumbSchema pageName="Certificates" pageUrl="/certificates" />
+<CredentialSchema credentials={[
+    { name: 'Certified Ethical Hacker (CEH)', issuer: 'EC-Council', category: 'Professional Certification' },
+    { name: 'TryHackMe Legend', issuer: 'TryHackMe', category: 'Platform Achievement' },
+    { name: 'HackTheBox Pro Hacker', issuer: 'Hack The Box', category: 'Platform Achievement' },
+    { name: 'Google Cybersecurity Certificate', issuer: 'Google', category: 'Professional Certification' },
+    { name: 'AWS Cloud Practitioner', issuer: 'Amazon Web Services', category: 'Cloud Certification' },
+    { name: 'CompTIA Security+', issuer: 'CompTIA', category: 'Professional Certification' }
+]} />
 
 <!-- Matrix Background Canvas -->
 <canvas bind:this={canvas}></canvas>
@@ -320,7 +346,7 @@ $: certificateStats = {
                         class="filter-btn" 
                         class:active={selectedCategory === category}
                         in:scale={{ duration: 300, delay: 500 + i * 100, easing: elasticOut }}
-                        on:click={() => selectedCategory = category}
+                        onclick={() => selectedCategory = category}
                     >
                         {category.replace(' ', '_')}
                     </button>
@@ -339,9 +365,9 @@ $: certificateStats = {
                     class:expanded={expandedCert === cert}
                     style="--cert-color: {cert.color}; --index: {i};"
                     in:scale={{ duration: 600, delay: 700 + i * 100, easing: elasticOut }}
-                    on:mouseenter={() => hoveredCert = cert}
-                    on:mouseleave={() => hoveredCert = null}
-                    on:click={() => expandedCert = expandedCert === cert ? null : cert}
+                    onmouseenter={() => hoveredCert = cert}
+                    onmouseleave={() => hoveredCert = null}
+                    onclick={() => expandedCert = expandedCert === cert ? null : cert}
                     role="button"
                     tabindex="0"
                 >
@@ -400,7 +426,7 @@ $: certificateStats = {
                     
                     <!-- View Certificate Button -->
                     <div class="cert-actions">
-                        <a href={cert.link} target="_blank" rel="noopener noreferrer" class="view-btn" on:click|stopPropagation>
+                        <a href={cert.link} target="_blank" rel="noopener noreferrer" class="view-btn" onclick={stopPropagation(bubble('click'))}>
                             View Certificate →
                         </a>
                     </div>

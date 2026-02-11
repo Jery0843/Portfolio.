@@ -1,8 +1,12 @@
 <script>
+    import { preventDefault } from 'svelte/legacy';
+
 import { onMount } from 'svelte';
 import { fade, fly, scale } from 'svelte/transition';
 import AnimatedIcon from '$lib/components/AnimatedIcons.svelte';
 import SEO from '$lib/components/SEO.svelte';
+import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
+import ContactPageSchema from '$lib/components/ContactPageSchema.svelte';
 
 const contacts = {
     email: [
@@ -16,20 +20,20 @@ const contacts = {
     ]
 };
 
-let canvas;
+let canvas = $state();
 let ctx;
-let showContent = false;
-let hoveredLink = null;
-let typingText = '';
+let showContent = $state(false);
+let hoveredLink = $state(null);
+let typingText = $state('');
 let currentCommandIndex = 0;
-let isTyping = false;
-let showForm = false;
-let formData = { name: '', email: '', subject: '', message: '' };
-let formErrors = {};
-let isSubmitting = false;
-let submitStatus = '';
-let messageId = '';
-let isRateLimited = false;
+let isTyping = $state(false);
+let showForm = $state(false);
+let formData = $state({ name: '', email: '', subject: '', message: '' });
+let formErrors = $state({});
+let isSubmitting = $state(false);
+let submitStatus = $state('');
+let messageId = $state('');
+let isRateLimited = $state(false);
 let particles = [];
 
 const commands = [
@@ -199,8 +203,13 @@ onMount(() => {
     title="Contact Jerome Andrew K - Get In Touch | Cybersecurity Consultant"
     description="Contact Jerome Andrew K for cybersecurity consulting, penetration testing services, collaboration opportunities, or professional inquiries. Available via email, LinkedIn, and social platforms."
     keywords="contact Jerome Andrew K, cybersecurity consultant contact, penetration tester hire, security researcher contact, collaboration inquiry"
-    canonical="https://jerome.is-a.dev/contact"
+    canonical="https://jerome.co.in/contact"
+    datePublished="2024-01-01"
+    dateModified="2026-02-11"
+    speakable={true}
 />
+<BreadcrumbSchema pageName="Contact" pageUrl="/contact" />
+<ContactPageSchema />
 
 <canvas bind:this={canvas} class="matrix-bg"></canvas>
 <div class="scanline"></div>
@@ -254,14 +263,14 @@ onMount(() => {
                             class="contact-card contact-card-link" 
                             style="--orb: {contact.color}"
                             in:scale={{ duration: 400, delay: 600 + i * 100 }}
-                            on:mouseenter={(e) => {
+                            onmouseenter={(e) => {
                                 hoveredLink = contact;
                                 for (let j = 0; j < 5; j++) {
                                     particles.push(createParticle(e.clientX + Math.random() * 20, e.clientY + Math.random() * 20));
                                 }
                                 if (particles.length === 5) animateParticles();
                             }}
-                            on:mouseleave={() => hoveredLink = null}
+                            onmouseleave={() => hoveredLink = null}
                         >
 <div class="card-header">
                                 {#if contact.platform === 'Outlook'}
@@ -281,14 +290,14 @@ onMount(() => {
                             class="contact-card contact-card-link" 
                             style="--orb: {contact.color}"
                             in:scale={{ duration: 400, delay: 600 + i * 100 }}
-                            on:mouseenter={(e) => {
+                            onmouseenter={(e) => {
                                 hoveredLink = contact;
                                 for (let j = 0; j < 5; j++) {
                                     particles.push(createParticle(e.clientX + Math.random() * 20, e.clientY + Math.random() * 20));
                                 }
                                 if (particles.length === 5) animateParticles();
                             }}
-                            on:mouseleave={() => hoveredLink = null}
+                            onmouseleave={() => hoveredLink = null}
                         >
 <div class="card-header">
                                 {#if contact.platform === 'Outlook'}
@@ -318,14 +327,14 @@ onMount(() => {
                         class="contact-card contact-card-link"
                         style="--orb: {contact.color}"
                         in:scale={{ duration: 400, delay: 800 + i * 100 }}
-                        on:mouseenter={(e) => {
+                        onmouseenter={(e) => {
                             hoveredLink = contact;
                             for (let j = 0; j < 5; j++) {
                                 particles.push(createParticle(e.clientX + Math.random() * 20, e.clientY + Math.random() * 20));
                             }
                             if (particles.length === 5) animateParticles();
                         }}
-                        on:mouseleave={() => hoveredLink = null}
+                        onmouseleave={() => hoveredLink = null}
                     >
                         <div class="card-header">
                             {#if contact.platform === 'Github'}
@@ -350,7 +359,7 @@ onMount(() => {
     {#if showForm}
     <div class="form-section" in:fly={{ y: 100, duration: 800, delay: 200 }}>
 <h2 class="section-title">SEND A SECURE MESSAGE</h2>
-<form class="contact-form glass" on:submit|preventDefault={submitForm}>
+<form class="contact-form glass" onsubmit={preventDefault(submitForm)}>
             <div class="form-grid">
                 <div class="input-group">
                     <label for="name" class="input-label">NAME</label>

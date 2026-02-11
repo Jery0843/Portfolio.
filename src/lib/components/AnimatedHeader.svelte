@@ -2,10 +2,14 @@
 import { fade, fly } from 'svelte/transition';
 import { onMount } from 'svelte';
 
-export let text = '';
-export let speed = 50;
-let displayText = '';
-let cursor = true;
+    interface Props {
+        text?: string;
+        speed?: number;
+    }
+
+    let { text = '', speed = 50 }: Props = $props();
+let displayText = $state('');
+let cursor = $state(true);
 
 onMount(() => {
     let i = 0;

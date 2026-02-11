@@ -1,12 +1,18 @@
 <script lang="ts">
+    import { run } from 'svelte/legacy';
+
 import { onMount } from 'svelte';
 import { fly } from 'svelte/transition';
 
-export let lines: string[] = [];
-export let typingSpeed = 35;
-export let showCursor = true;
+    interface Props {
+        lines?: string[];
+        typingSpeed?: number;
+        showCursor?: boolean;
+    }
+
+    let { lines = [], typingSpeed = 35, showCursor = true }: Props = $props();
 let currentLineIndex = 0;
-let displayedLines = [];
+let displayedLines = $state([]);
 
 function typeLines() {
     if (currentLineIndex < lines.length) {
@@ -29,7 +35,9 @@ function typeLines() {
     }
 }
 
-$: lines, typeLines();
+run(() => {
+        lines, typeLines();
+    });
 </script>
 
 <div class="bg-black/90 p-6 rounded-lg border border-green-500/30 shadow-lg shadow-green-500/20 

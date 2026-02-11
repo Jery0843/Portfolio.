@@ -1,6 +1,10 @@
 <script lang="ts">
-export let gridItems: { title: string, description: string, icon?: string }[] = [];
-export let columns: number = 3;
+    interface Props {
+        gridItems?: { title: string, description: string, icon?: string }[];
+        columns?: number;
+    }
+
+    let { gridItems = [], columns = 3 }: Props = $props();
 </script>
 
 <div 

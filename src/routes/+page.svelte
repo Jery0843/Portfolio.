@@ -5,10 +5,11 @@ import { cubicOut } from 'svelte/easing';
 import AnimatedIcon from '$lib/components/AnimatedIcons.svelte';
 import SEO from '$lib/components/SEO.svelte';
 import StructuredData from '$lib/components/StructuredData.svelte';
+import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 
-let canvas;
+let canvas = $state();
 let ctx;
-let visible = false;
+let visible = $state(false);
 let activeSection = 'about';
 
 // Real information about Jerome
@@ -75,12 +76,16 @@ function initMatrix() {
     title="Jerome Andrew K - Cybersecurity Expert & Ethical Hacker | Portfolio"
     description="Welcome to Jerome Andrew K's portfolio. Cybersecurity expert specializing in ethical hacking, penetration testing, network security, and full-stack development. Explore my projects and expertise."
     keywords="Jerome Andrew K, cybersecurity expert, ethical hacker, penetration testing, security researcher, full-stack developer, portfolio, infosec professional"
-    canonical="https://jerome.is-a.dev"
+    canonical="https://jerome.co.in"
+    datePublished="2024-01-01"
+    dateModified="2026-02-11"
+    speakable={true}
 />
 
 <!-- Structured Data for SEO -->
 <StructuredData type="person" />
 <StructuredData type="website" />
+<BreadcrumbSchema pageName="Home" pageUrl="https://jerome.co.in" />
 
 <!-- Matrix Background -->
 <canvas bind:this={canvas} class="matrix-bg"></canvas>

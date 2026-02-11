@@ -7,7 +7,7 @@
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
-**🌐 [Live Demo](https://jerome.is-a.dev) | 💼 [LinkedIn](https://www.linkedin.com/in/jeromeandrewk/) | 🐙 [GitHub](https://github.com/Jery0843)**
+**🌐 [Live Demo](https://jerome.co.in) | 💼 [LinkedIn](https://www.linkedin.com/in/jeromeandrewk/) | 🐙 [GitHub](https://github.com/Jery0843)**
 
 *A cybersecurity-themed portfolio showcasing ethical hacking, penetration testing, and full-stack development expertise through immersive animations and interactive design.*
 
@@ -64,7 +64,7 @@ This isn't just a portfolio-it's a **live cybersecurity lab** with style. Every 
 
 ### Deployment
 - **[Vercel](https://vercel.com/)** - Serverless deployment platform
-- **Custom Domain** - jerome.is-a.dev
+- **Custom Domain** - jerome.co.in
 
 ---
 
@@ -209,7 +209,7 @@ bun install
 Create a `.env` file:
 ```env
 # Add any API keys or environment-specific variables
-PUBLIC_SITE_URL=https://jerome.is-a.dev
+PUBLIC_SITE_URL=https://jerome.co.in
 ```
 
 ---
@@ -378,7 +378,7 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 ## 📞 Contact
 
 **Jerome Andrew K**  
-🌐 Website: [jerome.is-a.dev](https://jerome.is-a.dev)  
+🌐 Website: [jerome.co.in](https://jerome.co.in)  
 💼 LinkedIn: [jeromeandrewk](https://www.linkedin.com/in/jeromeandrewk/)  
 🐙 GitHub: [Jery0843](https://github.com/Jery0843)  
 🐦 X/Twitter: [@0xJerry__](https://x.com/0xJerry__)  

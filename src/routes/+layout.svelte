@@ -1,10 +1,35 @@
 <script lang="ts">
 import '../app.css';
 import { fly } from 'svelte/transition';
-import { page } from '$app/stores';
+import { page } from '$app/state';
 import { onMount } from 'svelte';
 import Navigation from '$lib/components/Navigation.svelte';
 import AnimatedIcon from '$lib/components/AnimatedIcons.svelte';
+    interface Props {
+        header?: import('svelte').Snippet;
+        children?: import('svelte').Snippet;
+    }
+
+    let { header, children }: Props = $props();
+
+// SiteNavigationElement schema for Google sitelinks
+const siteNavSchema = {
+    "@context": "https://schema.org",
+    "@type": "SiteNavigationElement",
+    "name": "Main Navigation",
+    "url": "https://jerome.co.in",
+    "hasPart": [
+        { "@type": "WebPage", "name": "Home", "url": "https://jerome.co.in" },
+        { "@type": "WebPage", "name": "About", "url": "https://jerome.co.in/about" },
+        { "@type": "WebPage", "name": "Experience", "url": "https://jerome.co.in/experience" },
+        { "@type": "WebPage", "name": "Education", "url": "https://jerome.co.in/education" },
+        { "@type": "WebPage", "name": "Skills", "url": "https://jerome.co.in/skills" },
+        { "@type": "WebPage", "name": "Projects", "url": "https://jerome.co.in/projects" },
+        { "@type": "WebPage", "name": "Certificates", "url": "https://jerome.co.in/certificates" },
+        { "@type": "WebPage", "name": "0xJerry's Lab", "url": "https://0xjerry.jerome.co.in" },
+        { "@type": "WebPage", "name": "Contact", "url": "https://jerome.co.in/contact" }
+    ]
+};
 
 const navItems = [
     { href: '/', label: 'HOME', icon: 'terminal' },
@@ -18,10 +43,10 @@ const navItems = [
     { href: '/contact', label: 'CONTACT', icon: 'mail' }
 ];
 
-let footerEl: HTMLElement;
-let footerTime = new Date();
-let launching = false;
-let footerProgress = 0;
+let footerEl: HTMLElement = $state();
+let footerTime = $state(new Date());
+let launching = $state(false);
+let footerProgress = $state(0);
 
 function scrollTop() {
     launching = true;
@@ -52,20 +77,24 @@ onMount(() => {
 });
 </script>
 
+<svelte:head>
+    {@html `<script type="application/ld+json">${JSON.stringify(siteNavSchema)}<\/script>`}
+</svelte:head>
+
 <div class="min-h-screen flex flex-col bg-black text-green-400 relative">
     <Navigation {navItems} />
     <div class="matrix-bg fixed inset-0 opacity-20 pointer-events-none z-0"></div>
     <header class="pt-28 md:pt-24 pb-6 md:pb-8 px-4 sm:px-6 relative z-10">
         <div class="container mx-auto max-w-7xl w-full">
-            <slot name="header"></slot>
+            {@render header?.()}
         </div>
     </header>
     <main class="flex-grow relative z-10 px-4 sm:px-6 pb-12">
         <div class="container mx-auto max-w-7xl w-full">
-            <slot />
+            {@render children?.()}
         </div>
     </main>
-    <footer class="site-footer relative z-10 border-t border-green-500/30" bind:this={footerEl} on:mousemove={onFooterMouseMove}>
+    <footer class="site-footer relative z-10 border-t border-green-500/30" bind:this={footerEl} onmousemove={onFooterMouseMove}>
         <div class="spotlight"></div>
         <div class="footer-content">
             <div class="left">
@@ -81,7 +110,7 @@ onMount(() => {
                     </a>
                 </div>
             </div>
-            <button class="to-top {launching ? 'launch' : ''}" style="--p: {footerProgress * 3.6}deg" on:click={scrollTop} aria-label="Scroll to top">↑</button>
+            <button class="to-top {launching ? 'launch' : ''}" style="--p: {footerProgress * 3.6}deg" onclick={scrollTop} aria-label="Scroll to top">↑</button>
             <div class="right text-right">
                 <div class="copyright text-green-400/80 text-xs font-mono">© {footerTime.getFullYear()} Jerome Andrew K.</div>
             </div>

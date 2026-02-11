@@ -3,18 +3,20 @@ import { onMount } from 'svelte';
 import { fade, fly, scale } from 'svelte/transition';
 import { cubicOut, elasticOut } from 'svelte/easing';
 import SEO from '$lib/components/SEO.svelte';
+import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
+import ProfilePageSchema from '$lib/components/ProfilePageSchema.svelte';
 
-let canvas;
+let canvas = $state();
 let ctx;
-let showContent = false;
-let typedText = '';
+let showContent = $state(false);
+let typedText = $state('');
 let currentSkillIndex = 0;
-let hoveredSkill = null;
-let mouseX = 0;
-let mouseY = 0;
+let hoveredSkill = $state(null);
+let mouseX = $state(0);
+let mouseY = $state(0);
 let particles = [];
 let animationFrame;
-let profileHovered = false;
+let profileHovered = $state(false);
 
 const personalInfo = {
     name: "Jerome Andrew K",
@@ -180,8 +182,13 @@ onMount(() => {
     title="About Jerome Andrew K - Cybersecurity Expert Profile"
     description="Learn about Jerome Andrew K's background, expertise in cybersecurity, ethical hacking, penetration testing, and achievements. TryHackMe Legend, HackTheBox Pro Hacker, ML Research."
     keywords="about Jerome Andrew K, cybersecurity profile, ethical hacker bio, penetration tester profile, security researcher, TryHackMe Legend"
-    canonical="https://jerome.is-a.dev/about"
+    canonical="https://jerome.co.in/about"
+    datePublished="2024-01-01"
+    dateModified="2026-02-11"
+    speakable={true}
 />
+<BreadcrumbSchema pageName="About" pageUrl="/about" />
+<ProfilePageSchema />
 
 <!-- Particle Canvas -->
 <canvas bind:this={canvas} class="particle-canvas"></canvas>
@@ -219,11 +226,11 @@ onMount(() => {
             <div 
                 class="profile-avatar"
                 class:hovered={profileHovered}
-                on:mouseenter={() => {
+                onmouseenter={() => {
                     profileHovered = true;
                     createParticles(window.innerWidth / 2, 200, 25);
                 }}
-                on:mouseleave={() => profileHovered = false}
+                onmouseleave={() => profileHovered = false}
                 role="button"
                 tabindex="0"
             >
@@ -259,7 +266,7 @@ onMount(() => {
                 <div 
                     class="about-card lab-card"
                     in:scale={{ duration: 600, delay: 400, easing: elasticOut }}
-                    on:mouseenter={(e) => {
+                    onmouseenter={(e) => {
                         createParticles(e.target.getBoundingClientRect().left + 150, e.target.getBoundingClientRect().top + 100, 12);
                     }}
                     role="button"
@@ -287,7 +294,7 @@ onMount(() => {
                 <div 
                     class="about-card linux-card"
                     in:scale={{ duration: 600, delay: 600, easing: elasticOut }}
-                    on:mouseenter={(e) => {
+                    onmouseenter={(e) => {
                         createParticles(e.target.getBoundingClientRect().left + 150, e.target.getBoundingClientRect().top + 100, 12);
                     }}
                     role="button"
@@ -319,7 +326,7 @@ onMount(() => {
                 <div 
                     class="about-card philosophy-card"
                     in:scale={{ duration: 600, delay: 800, easing: elasticOut }}
-                    on:mouseenter={(e) => {
+                    onmouseenter={(e) => {
                         createParticles(e.target.getBoundingClientRect().left + 150, e.target.getBoundingClientRect().top + 100, 15);
                     }}
                     role="button"
@@ -378,11 +385,11 @@ onMount(() => {
                     class:hovered={hoveredSkill === skill}
                     style="--skill-color: {skill.color}; --delay: {i * 0.1}s;"
                     in:scale={{ duration: 500, delay: 500 + i * 50, easing: elasticOut }}
-                    on:mouseenter={() => {
+                    onmouseenter={() => {
                         hoveredSkill = skill;
                         createParticles(mouseX, mouseY, 8);
                     }}
-                    on:mouseleave={() => hoveredSkill = null}
+                    onmouseleave={() => hoveredSkill = null}
                     role="button"
                     tabindex="0"
                 >
@@ -419,7 +426,7 @@ onMount(() => {
                         class="achievement-card achievement-link"
                         style="--glow-color: {achievement.glow};"
                         in:fly={{ x: i % 2 === 0 ? -50 : 50, duration: 600, delay: 700 + i * 150, easing: cubicOut }}
-                        on:mouseenter={(e) => {
+                        onmouseenter={(e) => {
                             createParticles(e.target.getBoundingClientRect().left + 200, e.target.getBoundingClientRect().top + 100, 15);
                         }}
                     >
@@ -441,7 +448,7 @@ onMount(() => {
                         class="achievement-card"
                         style="--glow-color: {achievement.glow};"
                         in:fly={{ x: i % 2 === 0 ? -50 : 50, duration: 600, delay: 700 + i * 150, easing: cubicOut }}
-                        on:mouseenter={(e) => {
+                        onmouseenter={(e) => {
                             createParticles(e.target.getBoundingClientRect().left + 200, e.target.getBoundingClientRect().top + 100, 15);
                         }}
                         role="button"
@@ -474,7 +481,7 @@ onMount(() => {
                     class="cta-button primary"
                     target="_blank"
                     rel="noopener noreferrer"
-                    on:mouseenter={(e) => createParticles(e.target.getBoundingClientRect().left + 100, e.target.getBoundingClientRect().top + 25, 12)}
+                    onmouseenter={(e) => createParticles(e.target.getBoundingClientRect().left + 100, e.target.getBoundingClientRect().top + 25, 12)}
                 >
                     <span class="button-icon">📚</span>
                     <span class="button-text">Download Resume</span>
@@ -484,7 +491,7 @@ onMount(() => {
                 <a 
                     href="/contact"
                     class="cta-button secondary"
-                    on:mouseenter={(e) => createParticles(e.target.getBoundingClientRect().left + 100, e.target.getBoundingClientRect().top + 25, 8)}
+                    onmouseenter={(e) => createParticles(e.target.getBoundingClientRect().left + 100, e.target.getBoundingClientRect().top + 25, 8)}
                 >
                     <span class="button-icon">📡</span>
                     <span class="button-text">Get In Touch</span>

@@ -1,6 +1,6 @@
 export const prerender = true;
 
-const site = 'https://jerome.is-a.dev';
+const site = 'https://jerome.co.in';
 const pages = [
     '',
     '/about',
