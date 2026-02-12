@@ -116,7 +116,7 @@ function initMatrix() {
             <div class="profile-card">
                 <div class="profile-image-container">
                     <img 
-                        src="https://files.jerome.co.in/2.jpeg" 
+                        src="/profile.jpeg" 
                         alt="Jerome's Profile"
                         class="profile-image"
                     />
