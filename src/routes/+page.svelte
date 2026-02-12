@@ -114,12 +114,18 @@ function initMatrix() {
         <!-- Profile Section -->
         <section class="profile-section" in:fly={{ x: -50, duration: 800, delay: 200 }}>
             <div class="profile-card">
-                <div class="profile-image-container">
-                    <img 
-                        src="/profile.jpeg" 
-                        alt="Jerome's Profile"
-                        class="profile-image"
-                    />
+                <div class="profile-image-wrapper">
+                    <div class="orbit-ring outer"></div>
+                    <div class="orbit-ring inner"></div>
+                    <div class="hex-scanner"></div>
+                    <div class="profile-image-container">
+                        <img 
+                            src="/profile.jpeg" 
+                            alt="Jerome's Profile"
+                            class="profile-image"
+                        />
+                    </div>
+                    <div class="glow-burst"></div>
                 </div>
                 <div class="profile-info">
                     <h3>Quick Intro</h3>
@@ -413,25 +419,189 @@ function initMatrix() {
 }
 
 /* Profile Section */
+/* Profile Image Wrapper */
+.profile-image-wrapper {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Orbital Rings */
+.orbit-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    opacity: 0;
+}
+
+.orbit-ring.outer {
+    width: 150px;
+    height: 150px;
+    border-top-color: #00ff00;
+    border-right-color: #00bfff;
+    animation: orbitSpinIn 0.8s ease-out 0.3s forwards, orbitSpin 3s linear 1.1s infinite;
+    filter: drop-shadow(0 0 6px #00ff00);
+}
+
+.orbit-ring.inner {
+    width: 135px;
+    height: 135px;
+    border-bottom-color: #ff00cc;
+    border-left-color: #00ff00;
+    animation: orbitSpinIn 0.8s ease-out 0.5s forwards, orbitSpinReverse 4s linear 1.3s infinite;
+    filter: drop-shadow(0 0 4px #ff00cc);
+}
+
+@keyframes orbitSpinIn {
+    0% {
+        opacity: 0;
+        transform: scale(2) rotate(0deg);
+    }
+    100% {
+        opacity: 0.8;
+        transform: scale(1) rotate(360deg);
+    }
+}
+
+@keyframes orbitSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes orbitSpinReverse {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0deg); }
+}
+
+/* Hex Scanner Line */
+.hex-scanner {
+    position: absolute;
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00ff00, transparent);
+    opacity: 0;
+    animation: scanLine 0.6s ease-in-out 0.9s forwards;
+    filter: drop-shadow(0 0 8px #00ff00);
+    z-index: 5;
+}
+
+@keyframes scanLine {
+    0% {
+        opacity: 0;
+        transform: translateY(-60px);
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(60px);
+    }
+}
+
+/* Glow Burst */
+.glow-burst {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    opacity: 0;
+    animation: burstGlow 1s ease-out 1s forwards;
+    z-index: 0;
+}
+
+@keyframes burstGlow {
+    0% {
+        opacity: 0;
+        box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
+    }
+    30% {
+        opacity: 1;
+        box-shadow: 0 0 40px 10px rgba(0, 255, 0, 0.6), 0 0 80px 20px rgba(0, 191, 255, 0.3), 0 0 120px 30px rgba(255, 0, 204, 0.15);
+    }
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 15px 3px rgba(0, 255, 0, 0.2), 0 0 30px 5px rgba(0, 191, 255, 0.1);
+    }
+}
+
+/* Profile Container */
 .profile-image-container {
     width: 120px;
     height: 120px;
     border-radius: 50%;
     overflow: hidden;
-    margin: 0 auto 1.5rem;
     border: 3px solid #00ff00;
     background: linear-gradient(45deg, #00ff00, #00bfff);
     padding: 3px;
-}
-@media (max-width: 640px) {
-    .profile-image-container { width: 96px; height: 96px; }
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    animation: containerMaterialize 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.7s forwards, containerPulse 3s ease-in-out 1.5s infinite;
 }
 
+@keyframes containerMaterialize {
+    0% {
+        opacity: 0;
+        transform: scale(0) rotate(-180deg);
+        border-color: transparent;
+    }
+    60% {
+        opacity: 1;
+        transform: scale(1.15) rotate(10deg);
+        border-color: #00ff00;
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+        border-color: #00ff00;
+    }
+}
+
+@keyframes containerPulse {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(0, 255, 0, 0.4), 0 0 50px rgba(0, 191, 255, 0.15);
+    }
+}
+
+@media (max-width: 640px) {
+    .profile-image-wrapper { width: 110px; height: 110px; }
+    .profile-image-container { width: 96px; height: 96px; }
+    .orbit-ring.outer { width: 116px; height: 116px; }
+    .orbit-ring.inner { width: 106px; height: 106px; }
+    .glow-burst { width: 96px; height: 96px; }
+    .hex-scanner { width: 96px; }
+}
+
+/* Profile Image - Glitch Reveal */
 .profile-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
+    opacity: 0;
+    animation: glitchReveal 0.8s steps(1) 1s forwards;
+}
+
+@keyframes glitchReveal {
+    0% { opacity: 0; filter: hue-rotate(90deg) saturate(3) brightness(2); }
+    10% { opacity: 1; filter: hue-rotate(90deg) saturate(3) brightness(2); transform: translate(3px, -2px); }
+    20% { opacity: 0; }
+    30% { opacity: 1; filter: hue-rotate(-90deg) saturate(2) brightness(1.5); transform: translate(-3px, 2px); }
+    40% { opacity: 0; }
+    50% { opacity: 1; filter: hue-rotate(45deg) saturate(2); transform: translate(2px, 1px); }
+    60% { opacity: 0.7; filter: hue-rotate(0deg) brightness(1.3); transform: translate(-1px, -1px); }
+    70% { opacity: 1; filter: grayscale(0.5); transform: translate(0); }
+    80% { opacity: 0.9; filter: none; }
+    90% { opacity: 1; filter: brightness(1.1); }
+    100% { opacity: 1; filter: none; transform: translate(0); }
 }
 
 .profile-info h3 {
