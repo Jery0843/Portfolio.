@@ -87,6 +87,10 @@ function initMatrix() {
 <StructuredData type="website" />
 <BreadcrumbSchema pageName="Home" pageUrl="https://jerome.co.in" />
 
+<svelte:head>
+    <link rel="preload" as="image" type="image/webp" href="/profile.webp" />
+</svelte:head>
+
 <!-- Matrix Background -->
 <canvas bind:this={canvas} class="matrix-bg"></canvas>
 <div class="scanline"></div>
@@ -119,11 +123,18 @@ function initMatrix() {
                     <div class="orbit-ring inner"></div>
                     <div class="hex-scanner"></div>
                     <div class="profile-image-container">
-                        <img 
-                            src="/profile.jpeg" 
-                            alt="Jerome's Profile"
-                            class="profile-image"
-                        />
+                        <picture>
+                            <source srcset="/profile.webp" type="image/webp" />
+                            <img 
+                                src="/profile.jpeg" 
+                                alt="Jerome's Profile"
+                                class="profile-image"
+                                fetchpriority="high"
+                                loading="eager"
+                                width="400"
+                                height="400"
+                            />
+                        </picture>
                     </div>
                     <div class="glow-burst"></div>
                 </div>
