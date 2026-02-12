@@ -394,7 +394,7 @@ const projects = [
         id: 3,
         title: "HackTheBox & TryHackMe Labs",
         category: "Penetration Testing",
-        url: "https://htb-writeup.jerome.co.in/",
+        url: "https://htb-writeup.beehiiv.com/",
         duration: "Ongoing",
         affiliation: "Self-Study",
         color: "#ff0080",
