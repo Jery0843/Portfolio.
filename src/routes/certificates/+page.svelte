@@ -17,7 +17,7 @@ let matrix;
 let visible = $state(false);
 let selectedCategory = $state('All');
 let hoveredCert = $state(null);
-let expandedCert = $state(null);
+let expandedCertId = $state(null);
 let searchTerm = $state('');
 
 // Matrix background setup
@@ -362,12 +362,12 @@ let certificateStats = $derived({
                 <div 
                     class="cert-card" 
                     class:hovered={hoveredCert === cert}
-                    class:expanded={expandedCert === cert}
+                    class:expanded={expandedCertId === cert.id}
                     style="--cert-color: {cert.color}; --index: {i};"
                     in:scale={{ duration: 600, delay: 700 + i * 100, easing: elasticOut }}
                     onmouseenter={() => hoveredCert = cert}
                     onmouseleave={() => hoveredCert = null}
-                    onclick={() => expandedCert = expandedCert === cert ? null : cert}
+                    onclick={() => expandedCertId = expandedCertId === cert.id ? null : cert.id}
                     role="button"
                     tabindex="0"
                 >
@@ -404,7 +404,7 @@ let certificateStats = $derived({
                     </div>
                     
                     <!-- Expanded Content -->
-                    {#if expandedCert === cert}
+                    {#if expandedCertId === cert.id}
                         <div class="expanded-content" in:fade={{ duration: 300 }}>
                             <div class="description">
                                 <h4>📋 Description</h4>
@@ -464,6 +464,7 @@ canvas {
     height: 100%;
     z-index: 1;
     opacity: 0.3;
+    pointer-events: none;
 }
 
 /* Main Container */
