@@ -4,6 +4,7 @@ import 'lenis/dist/lenis.css';
 import { fly } from 'svelte/transition';
 import { page } from '$app/state';
 import { onMount } from 'svelte';
+import { serializeSchema } from '$lib/utils/schema';
 import Navigation from '$lib/components/Navigation.svelte';
 import AnimatedIcon from '$lib/components/AnimatedIcons.svelte';
     interface Props {
@@ -105,7 +106,7 @@ onMount(async () => {
 
 <svelte:head>
     <meta name="yandex-verification" content="f845cb8aae27c0aa" />
-    {@html `<script type="application/ld+json">${JSON.stringify(siteNavSchema)}<\/script>`}
+    {@html `<script type="application/ld+json">${serializeSchema(siteNavSchema)}<\/script>`}
 </svelte:head>
 
 <div class="min-h-screen flex flex-col bg-black text-green-400 relative">

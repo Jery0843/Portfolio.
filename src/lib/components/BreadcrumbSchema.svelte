@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { serializeSchema } from '$lib/utils/schema';
     interface Props {
         pageName: string;
         pageUrl: string;
@@ -29,5 +30,5 @@
 </script>
 
 <svelte:head>
-    {@html `<script type="application/ld+json">${JSON.stringify(breadcrumbData)}<\/script>`}
+    {@html `<script type="application/ld+json">${serializeSchema(breadcrumbData)}<\/script>`}
 </svelte:head>

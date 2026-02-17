@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { serializeSchema } from '$lib/utils/schema';
     interface Props {
         projects?: Array<{
         title: string;
@@ -31,5 +32,5 @@
 </script>
 
 <svelte:head>
-    {@html `<script type="application/ld+json">${JSON.stringify(itemListSchema)}<\/script>`}
+    {@html `<script type="application/ld+json">${serializeSchema(itemListSchema)}<\/script>`}
 </svelte:head>

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { serializeSchema } from '$lib/utils/schema';
     const baseUrl = 'https://jerome.co.in';
     
     const profilePageSchema = {
@@ -55,5 +56,5 @@
 </script>
 
 <svelte:head>
-    {@html `<script type="application/ld+json">${JSON.stringify(profilePageSchema)}<\/script>`}
+    {@html `<script type="application/ld+json">${serializeSchema(profilePageSchema)}<\/script>`}
 </svelte:head>

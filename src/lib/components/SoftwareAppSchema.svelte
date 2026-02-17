@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { serializeSchema } from '$lib/utils/schema';
     interface Props {
         apps?: Array<{
         name: string;
@@ -34,6 +35,6 @@
 
 <svelte:head>
     {#each appSchemas as schema}
-        {@html `<script type="application/ld+json">${JSON.stringify(schema)}<\/script>`}
+        {@html `<script type="application/ld+json">${serializeSchema(schema)}<\/script>`}
     {/each}
 </svelte:head>
