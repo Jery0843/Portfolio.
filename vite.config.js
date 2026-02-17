@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
     plugins: [sveltekit()],
     ssr: {
-        noExternal: ['style-value-types', 'popmotion', 'framesync']
+        noExternal: ['style-value-types', 'framesync']
     },
     server: {
         fs: {
