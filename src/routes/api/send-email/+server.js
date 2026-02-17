@@ -1,20 +1,12 @@
 import { MAILGUN_API_KEY, MAILGUN_DOMAIN, RECIPIENT_EMAIL } from '$env/static/private';
 import { json } from '@sveltejs/kit';
 import crypto from 'crypto';
+import { sanitizeInput, validateEmail, isSuspicious } from '$lib/validation';
 
 // Rate limiting (simple in-memory store)
 const rateLimitStore = new Map();
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
 const MAX_REQUESTS_PER_WINDOW = 3;
-
-// Input sanitization function
-function sanitizeInput(input) {
-    if (typeof input !== 'string') return '';
-    return input
-        .replace(/[<>"'&]/g, '') // Remove potentially dangerous characters
-        .trim()
-        .substring(0, 1000); // Limit length
-}
 
 // Simple rate limiting
 function checkRateLimit(clientIP) {
@@ -54,15 +46,12 @@ export async function POST({ request, getClientAddress }) {
         }
         
         // Enhanced email validation
-        const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
-        if (!emailRegex.test(sanitizedEmail)) {
+        if (!validateEmail(sanitizedEmail)) {
             return json({ error: 'Invalid email format' }, { status: 400 });
         }
         
         // Check for suspicious content (basic spam detection)
-        const suspiciousPatterns = [/http[s]?:\/\//gi, /www\./gi, /<script/gi, /javascript:/gi];
-        const allContent = `${sanitizedName} ${sanitizedSubject} ${sanitizedMessage}`;
-        if (suspiciousPatterns.some(pattern => pattern.test(allContent))) {
+        if (isSuspicious([sanitizedName, sanitizedSubject, sanitizedMessage])) {
             return json({ error: 'Message contains suspicious content' }, { status: 400 });
         }
         
