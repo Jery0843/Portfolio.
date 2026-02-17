@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { serializeSchema } from '$lib/utils/schema';
     interface Props {
         title?: string;
         description?: string;
@@ -126,5 +127,5 @@
     {/if}
     
     <!-- WebPage Structured Data -->
-    {@html `<script type="application/ld+json">${JSON.stringify(webPageSchema)}<\/script>`}
+    {@html `<script type="application/ld+json">${serializeSchema(webPageSchema)}<\/script>`}
 </svelte:head>

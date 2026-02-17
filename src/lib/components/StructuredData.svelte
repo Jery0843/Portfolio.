@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { serializeSchema } from '$lib/utils/schema';
     interface Props {
         type?: 'person' | 'website' | 'organization';
     }
@@ -100,5 +101,5 @@
 </script>
 
 <svelte:head>
-    {@html `<script type="application/ld+json">${JSON.stringify(getData())}<\/script>`}
+    {@html `<script type="application/ld+json">${serializeSchema(getData())}<\/script>`}
 </svelte:head>

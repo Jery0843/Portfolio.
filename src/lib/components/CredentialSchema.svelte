@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { serializeSchema } from '$lib/utils/schema';
     interface Props {
         credentials?: Array<{
         name: string;
@@ -37,5 +38,5 @@
 </script>
 
 <svelte:head>
-    {@html `<script type="application/ld+json">${JSON.stringify(credentialListSchema)}<\/script>`}
+    {@html `<script type="application/ld+json">${serializeSchema(credentialListSchema)}<\/script>`}
 </svelte:head>
