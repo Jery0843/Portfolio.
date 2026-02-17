@@ -9,7 +9,7 @@ import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 let canvas = $state();
 let ctx;
 let showContent = $state(false);
-let selectedExp = $state(null);
+let selectedExpId = $state(null);
 let hoveredExp = $state(null);
 let particles = [];
 let animationFrame;
@@ -192,11 +192,11 @@ let experienceStats = $derived({
             {#each experiences as exp, i}
                 <div 
                     class="experience-card"
-                    class:selected={selectedExp === exp}
+                    class:selected={selectedExpId === exp.id}
                     class:hovered={hoveredExp === exp}
                     style="--exp-color: {exp.color}; --delay: {i * 0.2}s;"
                     in:scale={{ duration: 600, delay: 400 + i * 200, easing: elasticOut }}
-                    onclick={() => selectedExp = selectedExp === exp ? null : exp}
+                    onclick={() => selectedExpId = selectedExpId === exp.id ? null : exp.id}
                     onmouseenter={(e) => {
                         hoveredExp = exp;
                         createParticles(
@@ -234,7 +234,7 @@ let experienceStats = $derived({
                         </div>
                         
                         <!-- Collapsed View -->
-                        {#if selectedExp !== exp}
+                        {#if selectedExpId !== exp.id}
                             <div class="preview-content">
                                 <p class="impact-preview">{exp.impact}</p>
                                 <div class="skills-preview">
@@ -249,7 +249,7 @@ let experienceStats = $derived({
                         {/if}
                         
                         <!-- Expanded View -->
-                        {#if selectedExp === exp}
+                        {#if selectedExpId === exp.id}
                             <div class="expanded-content" in:fade={{ duration: 400 }}>
                                 <div class="achievements-section">
                                     <h5 class="section-title">🏆 Key Achievements</h5>
@@ -288,7 +288,7 @@ let experienceStats = $derived({
                         <!-- Interactive Elements -->
                         <div class="card-glow" style="background: radial-gradient(circle, {exp.color}20, transparent);"></div>
                         <div class="expand-indicator">
-                            {#if selectedExp === exp}
+                            {#if selectedExpId === exp.id}
                                 <span class="indicator-text">Click to collapse ↑</span>
                             {:else}
                                 <span class="indicator-text">Click to expand ↓</span>
@@ -362,6 +362,7 @@ let experienceStats = $derived({
     background-size: 50px 50px;
     animation: gridMove 20s linear infinite;
     z-index: 0;
+    pointer-events: none;
 }
 
 @keyframes gridMove {

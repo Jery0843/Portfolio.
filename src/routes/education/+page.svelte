@@ -9,7 +9,7 @@ import BreadcrumbSchema from '$lib/components/BreadcrumbSchema.svelte';
 let canvas = $state();
 let ctx;
 let showContent = $state(false);
-let selectedEdu = $state(null);
+let selectedEduId = $state(null);
 let hoveredEdu = $state(null);
 let particles = [];
 let animationFrame;
@@ -277,11 +277,11 @@ let educationStats = $derived({
             {#each educations as edu, i}
                 <div 
                     class="education-card"
-                    class:selected={selectedEdu === edu}
+                    class:selected={selectedEduId === edu.id}
                     class:hovered={hoveredEdu === edu}
                     style="--edu-color: {edu.color}; --delay: {i * 0.15}s;"
                     in:scale={{ duration: 600, delay: 400 + i * 150, easing: elasticOut }}
-                    onclick={() => selectedEdu = selectedEdu === edu ? null : edu}
+                    onclick={() => selectedEduId = selectedEduId === edu.id ? null : edu.id}
                     onmouseenter={(e) => {
                         hoveredEdu = edu;
                         createParticles(
@@ -324,7 +324,7 @@ let educationStats = $derived({
                         </div>
                         
                         <!-- Collapsed View -->
-                        {#if selectedEdu !== edu}
+                        {#if selectedEduId !== edu.id}
                             <div class="preview-content">
                                 <p class="description-preview">{edu.description}</p>
                                 <div class="grade-preview">{edu.grade}</div>
@@ -340,7 +340,7 @@ let educationStats = $derived({
                         {/if}
                         
                         <!-- Expanded View -->
-                        {#if selectedEdu === edu}
+                        {#if selectedEduId === edu.id}
                             <div class="expanded-content" in:fade={{ duration: 400 }}>
                                 <div class="subjects-section">
                                     <h5 class="section-title">📖 Core Subjects</h5>
@@ -398,7 +398,7 @@ let educationStats = $derived({
                         <!-- Interactive Elements -->
                         <div class="card-glow" style="background: radial-gradient(circle, {edu.color}25, transparent);"></div>
                         <div class="expand-indicator">
-                            {#if selectedEdu === edu}
+                            {#if selectedEduId === edu.id}
                                 <span class="indicator-text">Click to collapse ⬆</span>
                             {:else}
                                 <span class="indicator-text">Click to expand ⬇</span>
@@ -472,6 +472,7 @@ let educationStats = $derived({
     background-size: 40px 40px;
     animation: gridMove 25s linear infinite;
     z-index: 0;
+    pointer-events: none;
 }
 
 @keyframes gridMove {
