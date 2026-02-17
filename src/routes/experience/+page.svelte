@@ -13,8 +13,6 @@ let selectedExpId = $state(null);
 let hoveredExp = $state(null);
 let particles = [];
 let animationFrame;
-let mouseX = 0;
-let mouseY = 0;
 
 const experiences = [
     {
@@ -113,11 +111,6 @@ function animateParticles() {
     animationFrame = requestAnimationFrame(animateParticles);
 }
 
-function handleMouseMove(e) {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-}
-
 onMount(() => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -126,10 +119,7 @@ onMount(() => {
     setTimeout(() => showContent = true, 800);
     animateParticles();
     
-    document.addEventListener('mousemove', handleMouseMove);
-    
     return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
         if (animationFrame) {
             cancelAnimationFrame(animationFrame);
         }
