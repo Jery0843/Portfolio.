@@ -17,6 +17,24 @@ let animationFrame;
 const experiences = [
     {
         id: 1,
+        company: "Accor",
+        location: "Chennai",
+        position: "WiFi Engineer",
+        duration: "Mar 2026 – Present",
+        type: "IT Administration",
+        color: "#1e3a8a",
+        icon: "🏨",
+        achievements: [
+            "Managing IT infrastructure and systems administration across hotel operations",
+            "Ensuring network security and implementing cybersecurity best practices",
+            "Overseeing IT support and troubleshooting for seamless business operations",
+            "Coordinating with global IT teams for system upgrades and maintenance"
+        ],
+        skills: ["IT Administration", "Network Security", "Systems Management", "Cybersecurity", "Technical Support"],
+        impact: "Ensuring robust IT infrastructure and security for hospitality operations"
+    },
+    {
+        id: 2,
         company: "Kanini Software Solutions",
         location: "Chennai",
         position: "Data & Analytics Intern",
@@ -34,7 +52,7 @@ const experiences = [
         impact: "Improved healthcare scheduling efficiency and reduced patient no-show rates"
     },
     {
-        id: 2,
+        id: 3,
         company: "Mic & Mac Solutions",
         location: "Chennai", 
         position: "Web Development Intern",
@@ -134,8 +152,10 @@ let experienceStats = $derived({
     months: experiences.reduce((total, exp) => {
         const parts = exp.duration.split(' – ');
         if (parts.length === 2) {
-            const start = new Date(parts[0].replace('Dec', 'December').replace('May', 'May').replace('Jun', 'June').replace('Jan', 'January').replace('Apr', 'April'));
-            const end = new Date(parts[1].replace('Dec', 'December').replace('May', 'May').replace('Jun', 'June').replace('Jan', 'January').replace('Apr', 'April'));
+            const monthMap = { Jan: 'January', Feb: 'February', Mar: 'March', Apr: 'April', May: 'May', Jun: 'June', Jul: 'July', Aug: 'August', Sep: 'September', Oct: 'October', Nov: 'November', Dec: 'December' };
+            const replaceMonth = (s) => { for (const [k, v] of Object.entries(monthMap)) s = s.replace(k, v); return s; };
+            const start = new Date(replaceMonth(parts[0].trim()));
+            const end = parts[1].trim() === 'Present' ? new Date() : new Date(replaceMonth(parts[1].trim()));
             const months = Math.round((end - start) / (1000 * 60 * 60 * 24 * 30));
             return total + (months > 0 ? months : 1);
         }
