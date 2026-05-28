@@ -102,6 +102,58 @@ const certificates = [
     skills: ["Hands-on Penetration Testing", "Network Exploitation", "Web Application Security", "Live Target Assessment"]
     },
     {
+      id: 26,
+      title: "Fortinet Certified Associate in Cybersecurity",
+      link: "https://www.linkedin.com/safety/go/?url=https%3A%2F%2Fxw2f7-my%2Esharepoint%2Ecom%2F%3Ab%3A%2Fg%2Fpersonal%2Fjerry_xw2f7_onmicrosoft_com%2FIQAtfuXcbGQwTISVaZvL3w9UAXjXfqDgz30Tyy6mT0JI9SQ%3Fe%3Dj8EAtj&urlhash=yHhx&mt=_TkV3j5YKVUHbSq7PTrpzIVqkqzOFt67qcfUlinGoJ34Xj-kQZru5dvu7n4iPF4vj1T17H1_nvhMjNOTtebZqcQpFiY&isSdui=true",
+      organization: "Fortinet",
+      date: "May 2026",
+      category: "Cybersecurity",
+      level: "Associate",
+      color: "#EE3124",
+      icon: "🛡️",
+      description: "Associate-level Fortinet certification validating foundational cybersecurity knowledge, security concepts, and practical defense awareness.",
+      skills: ["Cybersecurity", "Cryptography", "Network Security", "Security Operations"]
+    },
+    {
+      id: 27,
+      title: "Fortinet Certified Fundamentals in Cybersecurity",
+      link: "https://www.linkedin.com/safety/go/?url=https%3A%2F%2Fxw2f7-my%2Esharepoint%2Ecom%2F%3Ab%3A%2Fg%2Fpersonal%2Fjerry_xw2f7_onmicrosoft_com%2FIQD5QkqkI8ZTSo7ia59tjIdCAUvonBV57L5hooTcaR5j9tA%3Fe%3D9APt5s&urlhash=umFd&mt=MnF9b-JDofQ0_A88JxDPpExz2flWPVAcsZ6OxE0d209A_z_gWLZuRSWsHKi224diJOaXliybLI8s2g8S7c&isSdui=true",
+      organization: "Fortinet",
+      date: "May 2026",
+      category: "Cybersecurity Fundamentals",
+      level: "Fundamentals",
+      color: "#EE3124",
+      icon: "📘",
+      description: "Fundamental cybersecurity certification covering core security principles, cyber defense basics, and essential protection concepts.",
+      skills: ["Cybersecurity", "Cryptography", "Information Security", "Security Fundamentals"]
+    },
+    {
+      id: 28,
+      title: "Introduction to the Threat Landscape 3.0",
+      link: "https://www.linkedin.com/safety/go/?url=https%3A%2F%2Fxw2f7-my%2Esharepoint%2Ecom%2F%3Ab%3A%2Fg%2Fpersonal%2Fjerry_xw2f7_onmicrosoft_com%2FIQDRclJ_qjFlT6jLHc9la1gkAQYvGLQ3rMTmMO_YRGSQIBk%3Fe%3Dnp8yBr&urlhash=HWp-&mt=nzvGM9EV5AZJ52g_snP_Wh4tUaC5dYS83UBQkwY4cSSxEV1nXojEZ_arML1mFVASs0U45ckE53JiUyMOJfor-KTt3HM&isSdui=true",
+      organization: "Fortinet",
+      date: "May 2026",
+      category: "Threat Intelligence",
+      level: "Foundation",
+      color: "#EE3124",
+      icon: "🌐",
+      description: "Fortinet training focused on understanding modern cyber threats, attack trends, and threat risk management concepts.",
+      skills: ["Cybersecurity", "Cyber Threat Intelligence", "Threat Landscape Analysis", "Risk Management"]
+    },
+    {
+      id: 29,
+      title: "Getting Started in Cybersecurity 3.0",
+      link: "https://www.linkedin.com/safety/go/?url=https%3A%2F%2Fxw2f7-my%2Esharepoint%2Ecom%2F%3Ab%3A%2Fg%2Fpersonal%2Fjerry_xw2f7_onmicrosoft_com%2FIQCbFVVZL42SQ47TX34cjwb0Aa231CT7j8CZLnpNapoVrB4%3Fe%3DIcqwRe&urlhash=u2zn&mt=AO63gs9vq5u3JAM_ahUqt5toXdks3iQnXhjzcRm_48My_u4o3-zbXy1IIcHaiRJuuAJslZrcqb0l4paoI8s2gJXZZh0&isSdui=true",
+      organization: "Fortinet",
+      date: "May 2026",
+      category: "Cybersecurity Fundamentals",
+      level: "Beginner",
+      color: "#EE3124",
+      icon: "🚀",
+      description: "Introductory Fortinet certification covering cybersecurity basics, core networking concepts, and security awareness.",
+      skills: ["Cybersecurity", "Networking", "Security Awareness", "Information Security Basics"]
+    },
+    {
     id: 1,
     title: "Certified Ethical Hacker (CEH v13)",
     link: "https://drive.google.com/file/d/1Tg7jN-2iZs7oYH23CL4p6txL7QfJJcBl/view?usp=sharing",
