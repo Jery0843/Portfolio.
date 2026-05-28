@@ -120,7 +120,7 @@ const certificates = [
       link: "https://www.linkedin.com/safety/go/?url=https%3A%2F%2Fxw2f7-my%2Esharepoint%2Ecom%2F%3Ab%3A%2Fg%2Fpersonal%2Fjerry_xw2f7_onmicrosoft_com%2FIQD5QkqkI8ZTSo7ia59tjIdCAUvonBV57L5hooTcaR5j9tA%3Fe%3D9APt5s&urlhash=umFd&mt=MnF9b-JDofQ0_A88JxDPpExz2flWPVAcsZ6OxE0d209A_z_gWLZuRSWsHKi224diJOaXliybLI8s2g8S7c&isSdui=true",
       organization: "Fortinet",
       date: "May 2026",
-      category: "Cybersecurity Fundamentals",
+      category: "Cybersecurity",
       level: "Fundamentals",
       color: "#EE3124",
       icon: "📘",
