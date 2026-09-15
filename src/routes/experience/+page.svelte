@@ -20,7 +20,7 @@ const experiences = [
         company: "Accor",
         location: "Chennai",
         position: "WiFi Engineer",
-        duration: "Mar 2026 – Present",
+        duration: "Mar 2026 – Aug 2026",
         type: "IT Administration",
         color: "#1e3a8a",
         icon: "🏨",
@@ -171,7 +171,7 @@ let experienceStats = $derived({
     keywords="experience, internship, data analytics, web development, Jerome Andrew K, professional journey"
     canonical="https://jerome.co.in/experience"
     datePublished="2024-01-01"
-    dateModified="2026-02-11"
+    dateModified="2026-09-15"
     speakable={true}
 />
 <BreadcrumbSchema pageName="Experience" pageUrl="/experience" />

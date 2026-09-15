@@ -18,6 +18,26 @@ let mouseY = 0;
 
 const educations = [
     {
+        id: 5,
+        institution: "Indian Institute of Information Technology, SriCity",
+        location: "Sri City",
+        degree: "Master of Technology, Cyber Security",
+        duration: "Aug 2026 – Present",
+        level: "Master's Degree",
+        color: "#8a2be2",
+        icon: "🎓",
+        status: "In Progress",
+        subjects: [
+            "Cyber Security"
+        ],
+        skills: ["Cyber Security"],
+        achievements: [
+            "Currently pursuing a Master of Technology in Cyber Security"
+        ],
+        grade: "In Progress",
+        description: "Postgraduate study focused on cyber security."
+    },
+    {
         id: 1,
         institution: "RedTeam Hacker Academy",
         location: "Chennai",
@@ -242,11 +262,11 @@ let educationStats = $derived({
 <!-- SEO Meta Tags -->
 <SEO 
     title="Education & Academic Journey - Jerome Andrew K"
-    description="Academic background and qualifications of Jerome Andrew K including MSc Computer Science, BSc Computer Science, and CEH certification."
-    keywords="education, academic, MSc Computer Science, Loyola College, Jerome Andrew K, cybersecurity education"
+    description="Academic background and qualifications of Jerome Andrew K including MTech Cyber Security, MSc Computer Science, BSc Computer Science, and CEH certification."
+    keywords="education, academic, MTech Cyber Security, IIIT SriCity, MSc Computer Science, Loyola College, Jerome Andrew K, cybersecurity education"
     canonical="https://jerome.co.in/education"
     datePublished="2024-01-01"
-    dateModified="2026-02-11"
+    dateModified="2026-09-15"
     speakable={true}
 />
 <BreadcrumbSchema pageName="Education" pageUrl="/education" />
@@ -1178,4 +1198,3 @@ let educationStats = $derived({
     }
 }
 </style>
-
