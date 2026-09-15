@@ -46,7 +46,7 @@ const educations = [
         level: "Professional Certification",
         color: "#ff0080",
         icon: "🛡️",
-        status: "In Progress",
+        status: "Completed",
         subjects: [
             "Ethical Hacking Fundamentals",
             "Penetration Testing",
@@ -64,7 +64,7 @@ const educations = [
             "Real-world penetration testing scenarios",
             "Advanced threat detection and analysis techniques"
         ],
-        grade: "In Progress",
+        grade: "Completed",
         description: "Comprehensive ethical hacking certification focusing on advanced cybersecurity techniques and defensive strategies."
     },
     {
