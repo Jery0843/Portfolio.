@@ -1,4 +1,4 @@
-import { MAILGUN_API_KEY, MAILGUN_DOMAIN, RECIPIENT_EMAIL } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { json } from '@sveltejs/kit';
 import crypto from 'crypto';
 import { sanitizeInput, validateEmail, isSuspicious } from '$lib/validation';
@@ -26,6 +26,12 @@ function checkRateLimit(clientIP) {
 
 export async function POST({ request, getClientAddress }) {
     try {
+        const { MAILGUN_API_KEY, MAILGUN_DOMAIN, RECIPIENT_EMAIL } = env;
+        if (!MAILGUN_API_KEY || !MAILGUN_DOMAIN || !RECIPIENT_EMAIL) {
+            console.error('Email service environment variables are not configured');
+            return json({ error: 'Email service is unavailable' }, { status: 503 });
+        }
+
         // Rate limiting
         const clientIP = getClientAddress();
         if (!checkRateLimit(clientIP)) {
