@@ -1,105 +1,13 @@
 <script lang="ts">
+    import { personSchema, websiteSchema } from '$lib/seo';
     import { serializeSchema } from '$lib/utils/schema';
-    interface Props {
-        type?: 'person' | 'website' | 'organization';
-    }
-
-    let { type = 'person' }: Props = $props();
-    
-    const baseUrl = 'https://jerome.co.in';
-    
-    const personData = {
-        "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "Jerome Andrew K",
-        "url": baseUrl,
-        "image": "https://jerome.co.in/logo.jpeg",
-        "jobTitle": "Cybersecurity Expert & Ethical Hacker",
-        "description": "Cybersecurity Expert & Ethical Hacker specializing in encryption, AI security, penetration testing, and malware analysis.",
-        "knowsAbout": [
-            "Cybersecurity",
-            "Ethical Hacking",
-            "Penetration Testing",
-            "Network Security",
-            "Full-Stack Development",
-            "Malware Analysis",
-            "Vulnerability Assessment",
-            "AI Security",
-            "Encryption"
-        ],
-        "sameAs": [
-            "https://github.com/Jery0843",
-            "https://www.linkedin.com/in/jeromeandrewk/",
-            "https://x.com/0xJerry__",
-            "https://0xjerry.is-a.dev"
-        ],
-        "alumniOf": [
-            {
-                "@type": "EducationalOrganization",
-                "name": "VIT University"
-            }
-        ],
-        "email": "mailto:jeromeandrewk@proton.me"
-    };
-    
-    const websiteData = {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Jerome Andrew K - Portfolio",
-        "url": baseUrl,
-        "description": "Professional portfolio showcasing cybersecurity expertise, projects, and experience",
-        "author": {
-            "@type": "Person",
-            "name": "Jerome Andrew K"
-        },
-        "inLanguage": "en-US",
-        "potentialAction": {
-            "@type": "SearchAction",
-            "target": {
-                "@type": "EntryPoint",
-                "urlTemplate": `${baseUrl}/search?q={search_term_string}`
-            },
-            "query-input": "required name=search_term_string"
-        }
-    };
-    
-    const organizationData = {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Jerome Andrew K",
-        "url": baseUrl,
-        "logo": "https://jerome.co.in/logo.jpeg",
-        "description": "Cybersecurity consulting and penetration testing services",
-        "founder": {
-            "@type": "Person",
-            "name": "Jerome Andrew K"
-        },
-        "sameAs": [
-            "https://github.com/Jery0843",
-            "https://www.linkedin.com/in/jeromeandrewk/",
-            "https://x.com/0xJerry__"
-        ],
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "contactType": "Professional Services",
-            "availableLanguage": ["English"]
-        }
-    };
-    
-    const getData = () => {
-        switch(type) {
-            case 'person':
-                return personData;
-            case 'website':
-                return websiteData;
-            case 'organization':
-                return organizationData;
-            default:
-                return personData;
-        }
-    };
+    let { type = 'person' }: { type?: 'person' | 'website' } = $props();
+    let schema = $derived({
+        '@context': 'https://schema.org',
+        ...(type === 'person' ? personSchema : websiteSchema)
+    });
 </script>
 
 <svelte:head>
-    {@html `<script type="application/ld+json">${serializeSchema(getData())}<\/script>`}
+    {@html `<script type="application/ld+json">${serializeSchema(schema)}<\/script>`}
 </svelte:head>

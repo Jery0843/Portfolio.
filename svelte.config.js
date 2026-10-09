@@ -7,14 +7,6 @@ const config = {
         adapter: adapter(),
         alias: {
             $lib: './src/lib'
-        },
-        prerender: {
-            handleHttpError: ({ path, referrer, message }) => {
-                if (message.includes('404')) {
-                    return;
-                }
-                throw new Error(message);
-            }
         }
     },
     preprocess: vitePreprocess()

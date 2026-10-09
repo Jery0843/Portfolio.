@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { page } from '$app/state';
+    import { siteUrl, personSchema } from '$lib/seo';
     import { serializeSchema } from '$lib/utils/schema';
     interface Props {
         title?: string;
@@ -13,7 +15,6 @@
         noindex?: boolean;
         datePublished?: string;
         dateModified?: string;
-        speakable?: boolean;
     }
 
     let {
@@ -21,45 +22,38 @@
         description = 'Jerome Andrew K - Cybersecurity Expert & Ethical Hacker. Specializing in encryption, AI security, penetration testing, and malware analysis. Explore projects, research, and experience.',
         keywords = 'cybersecurity, ethical hacking, penetration testing, security researcher, full-stack developer, Jerome Andrew K, infosec, vulnerability assessment, network security, malware analysis',
         canonical = '',
-        ogImage = 'https://jerome.co.in/logo.jpeg',
+        ogImage = `${siteUrl}/world/cybercity.webp`,
         ogType = 'website',
         twitterCard = 'summary_large_image',
         twitterCreator = '@0xJerry__',
         author = 'Jerome Andrew K',
         noindex = false,
         datePublished = '',
-        dateModified = '',
-        speakable = false
+        dateModified = ''
     }: Props = $props();
     
-    const baseUrl = 'https://jerome.co.in';
-    let fullCanonical = $derived(canonical || baseUrl);
+    const baseUrl = siteUrl;
+    let fullCanonical = $derived(new URL(canonical || page.url.pathname, baseUrl).href);
+    let fullImage = $derived(new URL(ogImage, baseUrl).href);
 
-    // WebPage schema with speakable and date metadata
+    // Structured data describes the same page and person as the visible content.
     let webPageSchema = $derived({
         "@context": "https://schema.org",
         "@type": "WebPage",
+        "@id": `${fullCanonical}#webpage`,
         "name": title,
         "description": description,
         "url": fullCanonical,
         "inLanguage": "en-US",
         "isPartOf": {
             "@type": "WebSite",
+            "@id": `${baseUrl}/#website`,
             "name": "Jerome Andrew K Portfolio",
             "url": baseUrl
         },
-        "author": {
-            "@type": "Person",
-            "name": author
-        },
+        "author": { "@id": personSchema["@id"], "@type": "Person", "name": author },
         ...(datePublished ? { "datePublished": datePublished } : {}),
-        ...(dateModified ? { "dateModified": dateModified } : {}),
-        ...(speakable ? {
-            "speakable": {
-                "@type": "SpeakableSpecification",
-                "cssSelector": ["h1", ".hero-title", ".cyber-title", ".section-title"]
-            }
-        } : {})
+        ...(dateModified ? { "dateModified": dateModified } : {})
     });
 </script>
 
@@ -73,9 +67,9 @@
     
     <!-- Robots -->
     {#if noindex}
-        <meta name="robots" content="noindex, nofollow" />
+        <meta name="robots" content="noindex, follow" />
     {:else}
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content="index, follow, max-image-preview:large" />
     {/if}
     
     <!-- Canonical URL -->
@@ -86,31 +80,30 @@
     <meta property="og:url" content={fullCanonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:image" content={fullImage} />
+    <meta property="og:image:alt" content="An atmospheric cybercity — Jerome Andrew K’s cybersecurity portfolio" />
     <meta property="og:site_name" content="Jerome Andrew K Portfolio" />
     <meta property="og:locale" content="en_US" />
     
     <!-- Twitter -->
-    <meta property="twitter:card" content={twitterCard} />
-    <meta property="twitter:url" content={fullCanonical} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={ogImage} />
-    <meta property="twitter:creator" content={twitterCreator} />
-    <meta property="twitter:site" content={twitterCreator} />
+    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:url" content={fullCanonical} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullImage} />
+    <meta name="twitter:image:alt" content="An atmospheric cybercity — Jerome Andrew K’s cybersecurity portfolio" />
+    <meta name="twitter:creator" content={twitterCreator} />
+    <meta name="twitter:site" content={twitterCreator} />
     
     <!-- Additional SEO -->
-    <meta name="theme-color" content="#000000" />
-    <meta name="msapplication-TileColor" content="#000000" />
+    <meta name="theme-color" content="#080f10" />
+    <meta name="msapplication-TileColor" content="#080f10" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     
     <!-- Language -->
-    <meta http-equiv="content-language" content="en" />
-    
-    <!-- Geo Tags (if relevant) -->
-    <meta name="geo.region" content="Worldwide" />
+    <meta name="language" content="en" />
     
     <!-- Copyright -->
     <meta name="copyright" content="Jerome Andrew K" />
@@ -119,10 +112,10 @@
     <meta name="rating" content="general" />
     
     <!-- Date Metadata -->
-    {#if datePublished}
+    {#if ogType === 'article' && datePublished}
         <meta property="article:published_time" content={datePublished} />
     {/if}
-    {#if dateModified}
+    {#if ogType === 'article' && dateModified}
         <meta property="article:modified_time" content={dateModified} />
     {/if}
     

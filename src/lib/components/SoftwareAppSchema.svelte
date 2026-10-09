@@ -24,11 +24,6 @@
             "@type": "Person",
             "name": "Jerome Andrew K",
             "url": "https://jerome.co.in"
-        },
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
         }
     })));
 </script>
