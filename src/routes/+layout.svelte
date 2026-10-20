@@ -29,6 +29,11 @@
         refreshReveals();
     });
     onMount(() => {
+        // Warm the cache with every scene backdrop so route changes show their image instantly.
+        const suffix = matchMedia('(max-width: 760px)').matches ? '-mobile' : '';
+        const warm = () => ['cybercity', ...scenePages].forEach(name => { new Image().src = `/world/${name}${suffix}.webp`; });
+        const idle = window.requestIdleCallback ?? ((fn: () => void) => setTimeout(fn, 800));
+        idle(warm);
         const preference = matchMedia('(prefers-reduced-motion: reduce)');
         motionRunning = !preference.matches;
         const updateMotion = () => { motionRunning = !preference.matches; };
