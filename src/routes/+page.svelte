@@ -23,7 +23,7 @@
 <section id="intro" class="chapter intro-section">
     <div class="chapter-marker" data-reveal><span>Ⅰ</span><p>THE HUMAN<br/>BEHIND THE TERMINAL</p></div>
     <div class="intro-grid">
-        <div class="portrait-frame" data-drift><div class="portrait-mat"><img src="/profile.webp" alt="Jerome Andrew K" width="400" height="400" loading="lazy" /></div><span class="portrait-caption">JEROME ANDREW K / 0xJERRY</span><span class="portrait-symbol" aria-hidden="true">✦</span></div>
+        <div class="portrait-frame" data-drift><div class="portrait-mat"><img src="/profile.webp" alt="Jerome Andrew K" width="400" height="400" loading="lazy" /></div><span class="portrait-caption">JEROME ANDREW K / 0xJERRY</span><span class="portrait-symbol" aria-hidden="true">#</span></div>
         <div class="intro-copy" data-reveal><div class="eyebrow">Quick Intro</div><h2>Curiosity is<br/>my <em>source code.</em></h2><p>Cybersecurity researcher and penetration tester with a passion for ethical hacking and secure development. I specialize in finding vulnerabilities and building defensive solutions to protect digital infrastructure.</p><a href="/about" class="underlined-link">More about me <span>↗</span></a></div>
     </div>
     <div class="chapter-whisper" aria-hidden="true">Look closer.</div>
@@ -42,4 +42,4 @@
     <div class="eyebrow" data-reveal>Explore Portfolio</div>
     <div class="directory-grid">{#each navigationLinks as link, i}<a href={link.url} class="directory-card" data-reveal><span class="directory-number">0{i + 1}</span><h3>{link.name}<span>↗</span></h3><p>{link.description}</p></a>{/each}</div>
 </section>
-<section class="contact-cta chapter" data-reveal><div class="eyebrow"><span class="status-dot"></span>{personalInfo.status}</div><h2>Ready to Work<br/><em>Together?</em></h2><p>Let's discuss your cybersecurity needs or development projects</p><a href="/contact" class="button button-primary">Get In Touch <span>↗</span></a><span class="closing-mark" aria-hidden="true">✦</span></section>
+<section class="contact-cta chapter" data-reveal><div class="eyebrow"><span class="status-dot"></span>{personalInfo.status}</div><h2>Ready to Work<br/><em>Together?</em></h2><p>Let's discuss your cybersecurity needs or development projects</p><a href="/contact" class="button button-primary">Get In Touch <span>↗</span></a><span class="closing-mark" aria-hidden="true">&gt;_</span></section>
