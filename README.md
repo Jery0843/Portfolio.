@@ -44,6 +44,20 @@ The original `/api/send-email` endpoint remains in place. Live delivery requires
 `MAILGUN_API_KEY`, `MAILGUN_DOMAIN`, and `RECIPIENT_EMAIL` in the server environment.
 No real email was sent during verification.
 
+### Security maintenance
+
+Run `npm audit` alongside the verification commands above. SvelteKit 2's `cookie`
+dependency is overridden to 0.7.2 to fix GHSA-pxg6-pf52-xh8x without a framework
+major-version migration. Keep the override until upgrading to a SvelteKit release
+that requires a patched cookie version itself. Security regression tests cover
+cookie delimiter injection and contact request validation and resource limits.
+
+The contact API accepts JSON bodies up to 16 KiB, enforces the form's field
+limits, rejects foreign Origin headers, and times out Mailgun requests after
+10 seconds. Its three-requests-per-15-minutes limiter expires entries and caps
+tracking at 10,000 clients per server instance. It is not a distributed limit;
+multi-instance deployments need a hosting-edge limit for fleet-wide enforcement.
+
 The site is hosted on Netlify. The existing `adapter-auto` detects Netlify through
 its `NETLIFY` environment variable and selects the Netlify adapter, preserving
 prerendered HTML and server endpoints. Hosting settings have not been changed.

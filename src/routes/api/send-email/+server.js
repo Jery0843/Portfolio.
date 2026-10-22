@@ -1,28 +1,8 @@
 import { env } from '$env/dynamic/private';
-import { json } from '@sveltejs/kit';
+import { isHttpError, json } from '@sveltejs/kit';
 import crypto from 'crypto';
 import { sanitizeInput, validateEmail, isSuspicious } from '$lib/validation';
-
-// Rate limiting (simple in-memory store)
-const rateLimitStore = new Map();
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
-const MAX_REQUESTS_PER_WINDOW = 3;
-
-// Simple rate limiting
-function checkRateLimit(clientIP) {
-    const now = Date.now();
-    const clientData = rateLimitStore.get(clientIP) || { count: 0, resetTime: now + RATE_LIMIT_WINDOW };
-    
-    if (now > clientData.resetTime) {
-        clientData.count = 1;
-        clientData.resetTime = now + RATE_LIMIT_WINDOW;
-    } else {
-        clientData.count++;
-    }
-    
-    rateLimitStore.set(clientIP, clientData);
-    return clientData.count <= MAX_REQUESTS_PER_WINDOW;
-}
+import { checkRateLimit, readContactRequest } from '$lib/server/contact-security.js';
 
 export async function POST({ request, getClientAddress }) {
     try {
@@ -38,7 +18,7 @@ export async function POST({ request, getClientAddress }) {
             return json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
         }
         
-        const { name, email, subject, message } = await request.json();
+        const { name, email, subject, message } = await readContactRequest(request);
         
         // Sanitize all inputs
         const sanitizedName = sanitizeInput(name);
@@ -132,7 +112,9 @@ Secure transmission completed via encrypted channel
             headers: {
                 'Authorization': `Basic ${Buffer.from(`api:${MAILGUN_API_KEY}`).toString('base64')}`
             },
-            body: emailData
+            body: emailData,
+            signal: AbortSignal.timeout(10_000),
+            redirect: 'error'
         });
         
         if (!response.ok) {
@@ -160,6 +142,9 @@ Secure transmission completed via encrypted channel
         );
         
     } catch (error) {
+        if (isHttpError(error)) {
+            return json({ error: error.body.message }, { status: error.status });
+        }
         console.error('Email sending error:', error);
         return json({ error: 'Internal server error' }, { status: 500 });
     }

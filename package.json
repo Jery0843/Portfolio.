@@ -9,7 +9,7 @@
         "preview": "vite preview",
         "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
         "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-        "test": "node src/lib/validation.test.js && node tests/content.test.mjs",
+        "test": "node src/lib/validation.test.js && node tests/security.test.mjs && node tests/content.test.mjs",
         "test:seo": "node tests/seo.test.mjs"
     },
     "dependencies": {
@@ -21,6 +21,11 @@
         "lenis": "^1.3.17",
         "svelte": "^5.50.1",
         "three": "^0.186.1"
+    },
+    "overrides": {
+        "@sveltejs/kit": {
+            "cookie": "0.7.2"
+        }
     },
     "devDependencies": {
         "@playwright/test": "^1.58.2",
